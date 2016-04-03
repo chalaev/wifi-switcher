@@ -1,0 +1,52 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: wifi-switcher
+Source: http://chalaev.com/wifi-switcher
+
+Files: usr/share/wifi-switcher/* usr/bin/wifi-switcher TODO README BUGS HOSTSPOT man/wifi-switcher.*
+Copyright: 2015 Oleg Shalaev <chalaev@gmail.com>
+License: GPL-3.0+
+
+Files: etc/wpa_supplicant/ws-action.sh
+Copyright: 2014-2015 Roman Galeev http://jamhed.dreamwidth.org/82198.html
+License: GPL-3.0+
+
+Files: etc/init.d/wifi-switcher
+Copyright: 2014-2015 Roman Galeev http://jamhed.dreamwidth.org/82198.html
+	   2015 Oleg Shalaev <chalaev@gmail.com>
+License: GPL-3.0+
+
+Files: etc/*
+Copyright: 2015 Oleg Shalaev <chalaev@gmail.com>
+License: GPL-3.0+
+
+Files: usr/share/wifi-switcher/connected.png
+Copyright: 2015  Rodolphe http://findicons.com/icon/248813/connect_creating?id=249151#
+License: GPL-3.0+
+
+Files: usr/share/wifi-switcher/locked.png
+Copyright: 2015 Dat Nguyen <splashyicons@gmail.com>
+License: Public-Domain
+
+Files: debian/*
+Copyright: 2015 Oleg Shalaev <chalaev@gmail.com>
+License: GPL-3.0+
+
+License: GPL-3.0+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
+
+License: public-domain
+  Released into the public domain.

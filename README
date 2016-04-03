@@ -1,0 +1,62 @@
+Configuring icewm and pdmenu
+===================
+A line in my ~/.icewm/menu file generating wifi menu is
+menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
+
+My ~/.pdmenu file looks as follows:
+===================
+#!/usr/bin/pdmenu
+
+# Set a pleasing color scheme.
+color:desktop:white:blue
+color:title:yellow:red
+color:base:yellow:red
+
+# Define the main menu.
+menu:main:Main Menu
+# menu:main:Main Menu:Some text
+
+show:navit...::navit_conf
+
+group:wifi (_unicode)
+	exec::makemenu:\
+		echo "menu:mainWiFimenu:Choose network:Select the network" ; \
+		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu scan
+	show:::mainWiFimenu
+	remove:::mainWiFimenu
+endgroup
+
+group:wifi (_ascii)
+	exec::makemenu:\
+		echo "menu:mainWiFimenuII:Choose network:Select the network" ; \
+		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu scan --ascii
+	show:::mainWiFimenuII
+	remove:::mainWiFimenuII
+endgroup
+
+
+group:wifi (unicode + hotspot)
+	exec::makemenu:\
+		echo "menu:mainWiFimenu:Choose network:Select the network" ; \
+		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu --wifi-hotspot scan
+	show:::mainWiFimenu
+	remove:::mainWiFimenu
+endgroup
+
+group:wifi (ascii + hotspot)
+	exec::makemenu:\
+		echo "menu:mainWiFimenuII:Choose network:Select the network" ; \
+		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu scan --ascii --wifi-hotspot
+	show:::mainWiFimenuII
+	remove:::mainWiFimenuII
+endgroup
+
+# Other stuff: for example, I use (good, old, no more maintained) vux as a music player:
+show:_vux...::vux_conf
+
+menu:vux_conf:Vux:Vux
+exec:down next::vuxctl down next
+exec:pause::vuxctl pause
+exec:next::vuxctl next
+exec:up stop::vuxctl up stop
+# exec:reload::vuxctl reload

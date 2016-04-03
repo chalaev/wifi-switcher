@@ -1,0 +1,8 @@
+/var/log/wifi-switcher.log {
+daily
+rotate 7
+compress
+missingok
+notifempty
+sharedscripts
+}

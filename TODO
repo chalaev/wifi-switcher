@@ -1,0 +1,10 @@
+1. In /usr/share/wifi-switcher/hotspot.sh use "while getopts" loop to pass options
+   a. wifi interface
+   b. name of the adhoc network
+2. Add bugreport option to /usr/share/wifi-switcher/hotspot.sh
+3. Move vsftpd, hostapd, and isc-dhcp-server from "Depends" to "Recommends"
+   section of the debian/control file and set up trigger so that wifi-switcher
+   is reconfigured every time they are installed/removed.
+4. use osd notifications like "(dis)connected from/to wifi network"
+   -- use dunst or another notification daemon to notify user of connections.
+5. create emacs interface for wifi-switcher

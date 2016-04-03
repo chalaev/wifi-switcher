@@ -1,0 +1,5 @@
+
+DHCPDv4_CONF=/etc/dhcp/wifi-switcher.conf
+#DHCPDv6_CONF=/etc/dhcp/dhcpd.conf
+DHCPD_CONF=/etc/dhcp/wifi-switcher.conf
+INTERFACES="wlan0"

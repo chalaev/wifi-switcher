@@ -1,0 +1,262 @@
+#!/usr/bin/perl
+# -*- coding: utf-8 -*-
+
+use List::Util qw(min max first);
+use List::MoreUtils qw(uniq);
+use Tk;			# needs package "perl-tk"
+use Tk::DialogBox;
+use Cwd 'abs_path';
+use Getopt::Long; # for GetOptions
+require Tk::LabEntry;
+binmode STDOUT, ':utf8'; # disables annoying warning
+
+@commands = grep !/^-+\w+/, @ARGV;
+@opts = grep /^-\w+/, @ARGV; # options starting with the dash symbol
+@modifiers = grep /^--\w+/, @ARGV; # options starting with two dash symbols
+
+$interface="wlan0"; # default
+if (matchAnyMemberQ('^--interface=.*' , \@modifiers)) {
+  GetOptions( 'interface=s' => \$interface, # wifi interface; other lines are unused
+		'ascii' => \$tmp, # to avoid errors we enumerate all options
+		'pdmenu' => \$tmp,
+		'emacs' => \$tmp,
+		'ascii' => \$tmp,
+		'icewm' => \$tmp,
+		'wifi-hotspot' => \$tmp );}
+
+$theProg=abs_path(__FILE__)." ".(join " ",@opts,@modifiers);
+
+# Global variables:
+$maxWIFIquality=0.9; $minWIFIquality=0.1; # rough assumption
+$lockedIcon="/usr/share/wifi-switcher/locked.png";
+$connectIcon="/usr/share/wifi-switcher/connected.png";
+@knownAuthMethods=("PSK","WPA-PSK","off"); # this must be improved
+$wpaSupplicantConf="/etc/wpa_supplicant/wifi-switcher.conf";
+@quotedParams=qw(ssid identity anonymous_identity ca_cert ca_cert2 client_cert client_cert2 password private_key private_key2 private_key_passwd private_key2_passwd phase1 phase2);
+@orderedParams=qw(ssid scan_ssid key_mgmt pairwise group psk eap identity anonymous_identity password ca_cert client_cert phase1 phase2  ca_cert2 client_cert2 private_key private_key_passwd  private_key2 private_key2_passwd eapol_flags priority);# ← order matters; this line is not properly tested and my fail for sophisticated configurations
+#######################################
+if ($commands[0] eq "scan") {
+    $wifiServer="/usr/share/wifi-switcher/hotspot.sh";
+    if(`pgrep hostapd`) {
+	if (memberQ("-icewm",\@opts)) {
+	    print('prog "client mode" ', "- $wifiServer stop\n");}
+	elsif (memberQ("-pdmenu",\@opts)) {
+	    print("group:client mode
+exec:cliMo::$wifiServer stop
+	exit
+endgroup
+");}}
+    else {
+	if (memberQ("--wifi-hotspot",\@modifiers)) {
+	    if (memberQ("-icewm",\@opts)) {
+		print('prog "ad-hoc mode" ', "- $wifiServer start\nseparator\n");}
+	    elsif (memberQ("-pdmenu",\@opts)) {
+	    print("group:ad-hoc mode
+exec:cliMo::$wifiServer start
+	exit
+endgroup
+nop:--------
+");}}
+    $iwlistOut = `sudo /sbin/iwlist $interface scan &> /dev/null`; # must be allowed without password
+    @profiles = split("Cell", $iwlistOut);
+     shift @profiles; #removes the first element which is garbage before the first word "cell"
+
+foreach $profile (@profiles) {
+    @lines = split("\n", $profile);
+    foreach (@lines) {
+	if  ($_ =~ ('[ \t]*ESSID:"(.*)"')) { $rec{'ssid'} = $1; }
+	elsif  ($_ =~ ('[ \t]*Quality[ \t]*=[ \t]*(\d+)/(\d+)[ \t]*')) { $rec{'quality'} = $1/$2 ; }
+	elsif  ($_ =~ ('[ \t]*Encryption key:(.+)[ \t]*')) { $rec{'key'} = $1;}
+	elsif  ($_ =~ ('[ \t]*Authentication Suites[ \t]*\((\d+)\)[ \t]*:[ \t]*(.+)')) { $rec{'authSuites'} = $2 ; }}
+    if (memberQ($rec{'ssid'},\@allNames)) {# @allNames defined from @pfs below
+	%duplicate=%{(first { $$_{'ssid'} eq $rec{'ssid'} } @pfs)};
+	$rec{'quality'}=max($rec{'quality'},$duplicate{'quality'});
+	@pfs = grep { $$_{'ssid'} ne $rec{'ssid'}} @pfs; }
+    if ($rec{'key'} eq "off") {$rec{'authSuites'}="off";}
+    unless (defined $rec{'authSuites'}) {$rec{'authSuites'}="unknown";}
+    unless ($rec{'ssid'} eq "\\x00") {    # we ignore hidden networks
+	push @pfs, {%rec}; undef %rec;}   # pushing cloned hash and cleaning its value
+    @allNames=map { $$_{'ssid'} } @pfs; } # array of all known SSIDs
+
+# sorting networks according to quality:
+@pris=uniq(sort {$b <=> $a} map { $$_{'quality'} } @pfs);
+foreach $pri (@pris) { push @spfs, grep { $$_{'quality'} == $pri} @pfs;} #sorting done
+
+if ( `/sbin/iwconfig $interface | grep "$interface[ \t]*"` =~ ("ESSID:\"(.*)\"")) {
+    $ssid=$1;    %connectedTo=%{(first { $$_{'ssid'} eq $ssid } @spfs)};
+    @spfs = grep { $$_{'ssid'} ne $ssid} @spfs;
+    $ssidPrinted=handleName($ssid);
+    if (memberQ("-icewm",\@opts)) {
+	print('menuprogreload "',qualitySymbol($connectedTo{'quality'}),$ssidPrinted,'"'," $connectIcon 0 $theProg act",' "',$ssid,'" "',$connectedTo{'authSuites'},"\"\nseparator\n");}
+    elsif (memberQ("-pdmenu",\@opts)) {
+	print('group:',qualitySymbol($connectedTo{'quality'}),$ssidPrinted,"
+exec::makemenu:\\
+		echo \"menu:wifiII:Choose action:forget or (re)connect\" ; \\
+$theProg act \"$ssid\" \"$connectedTo{'authSuites'}\"
+	show:::wifiII
+	remove:::wifiII
+	exit
+endgroup
+nop:--------
+");}
+    elsif (memberQ("-emacs",\@opts)) {
+	print(qualitySymbol($connectedTo{'quality'})," \"$ssid\" \"$connectedTo{'authSuites'}\"\n--- --- ---\n");}}
+
+foreach $stanza ( @spfs ) {
+    if ($$stanza{'key'} eq "off") { $ms=" - 0 ";} else { $ms=" $lockedIcon 0 ";}
+    $ssidPrinted=handleName($$stanza{'ssid'});
+    if (memberQ("-icewm",\@opts)) {
+	print('menuprogreload "',qualitySymbol($$stanza{'quality'}),$ssidPrinted,'"',$ms," $theProg act \"$$stanza{'ssid'}\" \"$$stanza{'authSuites'}\"\n");}
+    elsif (memberQ("-pdmenu",\@opts)) {
+	print('group:',qualitySymbol($$stanza{'quality'}),$ssidPrinted,'
+exec::makemenu:\
+		echo "menu:wifiII:Choose action:forget or (re)connect" ; \
+',$theProg, " act \"$$stanza{'ssid'}\" \"$$stanza{'authSuites'}\"",'
+	show:::wifiII
+	remove:::wifiII
+	exit
+endgroup
+
+');}# ← perhaps I should add the string "remove:::wifiI" there…
+    elsif (memberQ("-emacs",\@opts)) {
+	print(qualitySymbol($$stanza{'quality'})," \"$$stanza{'ssid'}\" \"$$stanza{'authSuites'}\"\n");}}
+
+sub handleName {
+    my $lc=$_[0]; # copying argument to preserve its value
+    my $dots=chr(8230); # …
+    if (memberQ("--ascii",\@modifiers)) { $dots="..."; }
+    if (memberQ("-icewm",\@opts)) {
+	if (length($lc)>11) {$lc=join('',substr($lc, 0, 11-length($dots)),$dots);}
+	$lc =~ s/_/__/g;} # IceWM misunderstands first underscore symbol
+    elsif (memberQ("-pdmenu",\@opts)) {
+	if (length($lc)>13) {$lc=join('',substr($lc, 0, 13-length($dots)),$dots);}
+	$lc =~ s/_/\\_/g;} # PdMenu misunderstands underscore symbols in another way
+    return($lc);}
+
+sub qualitySymbol {
+    if (memberQ("--ascii",\@modifiers)) {return(sprintf("%d\% ", (100*$_[0])));}
+    else {
+	if ($_[0] > $maxWIFIquality) {$_[0] = $maxWIFIquality;}
+	if ($_[0] < $minWIFIquality) {$_[0] = $minWIFIquality;}
+	return(chr(int(0.5+9601+($_[0]-$minWIFIquality)/($maxWIFIquality-$minWIFIquality)*(9608-9601))))};}}} # ▁ ▂ ▃ ▄ ▅ ▆ ▇ █
+
+#### END OF "SCAN" BLOCK #############################################
+else {#  if ($commands[0] ne "scan")
+# здесь в любом случае придётся сканировать wpa_supplicant.conf
+# чтобы понять, для каких сетей доступна опция "forget"
+$inFile=("<" . $wpaSupplicantConf);
+open(wpaSuppFile, $inFile) || die "can not read file\n"; # debug
+my $fileText = join " ", grep {$_ !~ "^[ \t]*#" } <wpaSuppFile>; # excluding commented lines
+close(wpaSuppFile);
+
+@profiles = split("network=\\{", $fileText);
+shift @profiles; #removes the header before the first network entry
+
+### НАЧАЛО блока чтения конфиг. файла
+foreach $profile (@profiles) {
+    @lines = split("\n", $profile);
+    foreach $line (@lines) {# parsing string parameters from the config file
+	foreach $parName (@orderedParams) {
+	    if  ($line =~ ('[ \t]*'.$parName.'[ \t]*=[ \t]*"(.+)"'))  {$rec{$parName}=$1; }
+	    elsif ($line =~ ('[ \t]*'.$parName.'[ \t]*=[ \t]*(.+)'))  {$rec{$parName}=$1; }}}
+    unless (memberQ($rec{'ssid'},\@allNames)) {# excluding duplicates; @allNames (defined below) is a list of already known SSIDs
+	unless (defined $rec{'priority'}) { $rec{'priority'}=0; }
+	push @pfs, {%rec}; undef %rec;  # pushing cloned hash and cleaning its value
+	@allNames=map { $$_{'ssid'} } @pfs; }} # array of all known SSIDs
+#print ("total ", $#pfs, " distinct records found\n");
+@pris=uniq(sort {$a <=> $b} map { $$_{'priority'} } @pfs);# start sorting records by priority
+undef @spfs;
+foreach $pri (@pris) { push @spfs, grep { @$_{'priority'} == $pri} @pfs;} # sorting done
+foreach $tp (@spfs) { $$tp{'priority'}=3*($i++);}
+### КОНЕЦ блока чтения конфиг. файла
+
+if ($commands[0] eq "act") {
+    if (memberQ($commands[1],\@allNames) || memberQ($commands[2],\@knownAuthMethods)) {# connecting allowed
+	if ($commands[2] eq "PSK") {$commands[2] = "WPA-PSK";}
+	# print("prog \"(re)connect\" - $theProg connect \"$commands[1]\" \"$commands[2]\"\n");
+	if    (memberQ("-icewm", \@opts)) {
+	    print("prog \"(re)connect\" - $theProg connect \"$commands[1]\" \"$commands[2]\"\n");}
+	elsif (memberQ("-pdmenu",\@opts)) {
+	    print("group:(re)connect
+exec:(re)connect::$theProg connect \"$commands[1]\" \"$commands[2]\"
+exit
+endgroup
+");}}
+
+if (memberQ($commands[1],\@allNames)) {# forgetting allowed
+    if    (memberQ("-icewm", \@opts)) {
+	print("prog \"forget\" - $theProg forget \"$commands[1]\"\n");}
+    elsif (memberQ("-pdmenu",\@opts)) {
+	print("group:forget
+exec:forget::$theProg forget \"$commands[1]\"
+exit
+endgroup
+");}}}
+# I wonder if nothing bad happens if neither connecting nor forgetting is allowed.
+
+elsif ($commands[0] eq "connect") {# $commands[1] is the ssid of the network to connect to.
+if (memberQ($commands[1],\@allNames)) {# if the network is known, all we have to do is assign to it the highest priority
+    %connectToMe=%{(first { $$_{'ssid'} eq $commands[1] } @spfs)};
+    @spfs = grep { $$_{'ssid'} ne $commands[1] } @spfs; # ← @spfs might become empty at this point
+    # the following line is problematic on connect:
+    if (@spfs) { # @spfs is not empty...
+    $connectToMe{'priority'}=3+$spfs[-1]{'priority'};} # assigning highest priority
+    else { $connectToMe{'priority'}=3;}}
+else {# $commands[2] specifies if encryption key is required
+    if ($commands[2] eq "off") {# network is open and unknown
+	%connectToMe = ('ssid'=>$commands[1],'priority'=>3+$pris[-1],'key_mgmt'=>"NONE");}
+    elsif ($commands[2] eq "WPA-PSK" || $commands[2] eq "unknown") {# sometimes 'Auth. suite(s)' information is missing for PSK-encrypted networks
+# Network is unknown and encrypted; so let us ask for a password:
+	my $mw = MainWindow->new; $mw->withdraw();#  remove the main window
+	$db = $mw->DialogBox(-title => 'wifi password', -buttons => ['Ok'], -default_button => 'Ok');
+	$ssid=$commands[1];
+	$db->add('LabEntry', -textvariable => \$ssid, -width => 20, 
+		 -label => 'SSID', -labelPack => [-side => 'left'])->pack;
+	$keyMgmt=$commands[2];
+	$db->add('LabEntry', -textvariable => \$keyMgmt, -width => 20, 
+		 -label => 'Auth. suite(s)', -labelPack => [-side => 'left'])->pack;
+	$db->add('LabEntry', -textvariable => \$pw, -width => 20, 
+		 -label => 'Password', -show => '*', -labelPack => [-side => 'left'])->pack;
+	$answer = $db->Show();
+	if ($answer eq "Ok") {
+	    foreach  (`/usr/bin/wpa_passphrase $ssid $pw`) {
+		if ($_ =~ "[ \t]*psk=") { s/^[ \t]*psk=(.+)/\1/; $psk = $_ ; }}}
+	%connectToMe = ('ssid'=>$ssid,'priority'=>3+$pris[-1],'psk'=>$psk,'key_mgmt'=>$keyMgmt);}
+    else { $mw->Dialog(-title => 'Sorry',  -text => 'Can not handle this encryption type yet.', 
+	         -default_button => 'ok', -buttons => [ 'ok'], -bitmap => 'warning' )->Show( );}}
+push @spfs, {%connectToMe};}
+# available bitmaps are described on http://tmml.sourceforge.net/doc/tk/GetBitmap.html
+
+elsif ($commands[0] eq "forget") {
+    @spfs = grep { $$_{'ssid'} ne $commands[1]} @spfs; }
+elsif ($commands[0] eq "forgetAllOpen") {
+    @spfs = grep { $$_{'key_mgmt'} ne 'NONE'} @spfs; }
+else {print "unknown first command-line argument\n";}
+
+if ($commands[0] eq "connect" || $commands[0] eq "forget") {# обновляем файл /etc/wpa_supplicant/wpa_supplicant.conf
+    $outFile=(">" . $wpaSupplicantConf);
+    open(wpaSuppFile, $outFile) || die "can not write file $wpaSupplicantConf\n";
+    print wpaSuppFile "ctrl_interface=/var/run/wpa_supplicant\neapol_version=1\n\n";# header
+#print wpaSuppFile "ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\neapol_version=1\n\n";# ← perhaps a better header
+    foreach $stanza ( @spfs ) {
+	print(wpaSuppFile "network={\n");
+	foreach $prop (@orderedParams) {
+	    if (defined $$stanza{"$prop"}) {
+		if (memberQ($prop,\@quotedParams)) {
+		    print(wpaSuppFile "$prop=\"",$$stanza{"$prop"},"\"\n");} else {
+			print(wpaSuppFile "$prop=",$$stanza{"$prop"},"\n");}}}
+	print wpaSuppFile "}\n\n";}
+    close(wpaSuppFile);
+    `sudo /usr/sbin/service wifi-switcher restart`
+}} # the last brace returned us to the zeroth level
+
+sub memberQ {# instead of (experimental feature) ~~
+    $element=$_[0];  @array=@{$_[1]};
+    return(first {$_ eq  $element} @array);}
+# ← example: print memberQ("identity",\@quotedParams);
+
+sub matchAnyMemberQ {# instead of (experimental feature) ~~
+    $element=$_[0];  @array=@{$_[1]};
+    return(first { $_  =~ /$element/ } @array);}
+
+__END__

@@ -1,0 +1,39 @@
+Template: wifi-switcher/title
+Type: title
+Description: wifi-switcher
+
+Template: wifi-switcher/wifiInterface
+Type: string
+Description: Choose wifi network interface:
+
+Template: wifi-switcher/essid
+Type: string
+Description: Choose SSID for the ad-hoc network
+
+Template: wifi-switcher/wifiPassphrase
+Type: string
+Description: Choose psk password for the hotspot (ad-hoc) network
+
+Template: wifi-switcher/ftpPassphrase
+Type: string
+Description: Choose ftp password
+
+Template: wifi-switcher/ftpVirtualUser
+Type: string
+Default: switcher
+Description: Choose ftp user name in the hotspot (ad-hoc) network
+
+Template: wifi-switcher/ftpLocalUser
+Type: string
+Default: locftp
+Description: Choose local user name which will own ftp directory
+
+Template: wifi-switcher/nameservers
+Type: string
+Description: Choose one or more (coma-separated) nameservers for the ad-hoc network
+
+Template: wifi-switcher/subnet
+Type: string
+Default: 192.168.1.0
+Description: Choose subnet for the ad-hoc network:
+

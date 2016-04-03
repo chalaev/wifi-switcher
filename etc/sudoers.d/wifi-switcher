@@ -1,0 +1,13 @@
+
+%netdev ALL=NOPASSWD:/sbin/iwlist wlan0 scan
+%netdev ALL=NOPASSWD:/sbin/ifdown wlan0
+%netdev ALL=NOPASSWD:/sbin/ifup wlan0=hostname
+%netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher restart
+%netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher start
+%netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher stop
+%netdev ALL=NOPASSWD:/usr/sbin/service hostapd start
+%netdev ALL=NOPASSWD:/usr/sbin/service hostapd stop
+%netdev ALL=NOPASSWD:/usr/sbin/service isc-dhcp-server start
+%netdev ALL=NOPASSWD:/usr/sbin/service isc-dhcp-server stop
+%netdev ALL=NOPASSWD:/usr/sbin/service vsftpd start
+%netdev ALL=NOPASSWD:/usr/sbin/service vsftpd stop

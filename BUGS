@@ -1,0 +1,21 @@
+Sometimes (when there are too many wifi networks) you have to choose the optimal
+wireless-channel in the file /etc/network/interfaces.d/wifi-switcher.
+
+Bug: hotspot mode interrupted by the dpkg-reconfigure command is not restored after reconfiguring.
+
+1. Допустим, максимальный приоритет у disorder, который временно исчезает, так что связь
+   переключается на Elmwood. Затем disorder снова появляется, но автоматического переключения на
+   него не происходит. И если я в таком состоянии активирую меню, оно мне наврётм что якобы
+   подключено к disorder.
+2. Подозрение: возникает ошибка сразу же после установки, когда пуст файл
+   /etc/wpa_supplicant/wifi-switcher.conf
+3. иногда сеть не работает, приходится вручную командовать ifconfig wlan0 up ← это
+   д.б. автоматизировано.
+
+
+* Issues on older debian versions
+** non-working /etc/sudoers.d/
+As of Debian version 1.7.2p1-1, the default /etc/sudoers file created on
+installation of the package now includes the directive: #includedir /etc/sudoers.d
+Problem: in earlier linux versions, files in /etc/sudoers.d/ might not be read.
+This can b fixed by including #includedir /etc/sudoers.d into the /etc/sudoers file.

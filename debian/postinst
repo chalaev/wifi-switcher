@@ -1,0 +1,172 @@
+#!/bin/bash -e
+# postinst script for wifi-switcher
+# Using bash because of its arithmetic capabilities.
+. /usr/share/debconf/confmodule
+db_version 2.0
+
+if ! getent group netdev  > /dev/null 2>&1 ; then
+    groupadd netdev || echo "wifi-switcher error: could not add netdev group"
+fi
+
+case "$1" in
+    "configure")
+	db_beginblock
+	# setting wireless interface name:
+	allInterfaces=$(ip link show | awk -F: '/^[0-9]+:/ { if ($2 !~ / *lo/)  {gsub(" ","",$2); print $2 }}' | sort -r)
+	# <-- may be I should display interactive choice menu in the future
+	db_get wifi-switcher/wifiInterface
+	if [ -z "$RET" ]; then # unset or empty string
+	    db_set wifi-switcher/wifiInterface $(echo "$allInterfaces" | head -n1)
+	fi
+	db_input medium wifi-switcher/wifiInterface || true
+	
+	db_get wifi-switcher/essid
+	if [ -z "$RET" ]; then # unset or empty string
+	    db_set wifi-switcher/essid "$(hostname)"
+	fi
+	db_input medium wifi-switcher/essid || true
+	
+	db_get wifi-switcher/nameservers
+	if [ -z "$RET" ]; then # unset or empty string
+	    nameServerList=$(grep nameserver /etc/resolv.conf | awk '{print $2}'| sed "s/$/,/")
+	    db_set wifi-switcher/nameservers $(echo $nameServerList | sed "s/,$//")
+	fi
+	db_input medium wifi-switcher/nameservers || true
+
+	db_get wifi-switcher/wifiPassphrase
+	if [ -z "$RET" ]; then # unset or empty string
+	    db_set wifi-switcher/wifiPassphrase $(apg -MNcl -a1 -n1)
+	fi
+	db_input medium wifi-switcher/wifiPassphrase || true
+	
+	db_get wifi-switcher/ftpPassphrase
+	if [ -z "$RET" ]; then # unset or empty string
+	    db_set wifi-switcher/ftpPassphrase $(apg -MNcl -a1 -n1)
+	fi
+	db_input medium wifi-switcher/ftpPassphrase || true
+	
+ 	db_input medium wifi-switcher/ftpVirtualUser || true
+ 	db_input medium wifi-switcher/ftpLocalUser || true
+	db_endblock
+	db_input medium wifi-switcher/subnet || true
+	#############
+	db_go
+	#############
+	db_get wifi-switcher/wifiInterface
+	wifiInterface="$RET"
+	# echo "setting wifiInterface to $wifiInterface"
+	db_get wifi-switcher/essid
+	essid="$RET"
+	db_get wifi-switcher/nameservers
+	nameservers="$RET"
+	db_get wifi-switcher/wifiPassphrase
+	wifiPassphrase="$RET"
+	db_get wifi-switcher/ftpVirtualUser
+	ftpVirtualUser="$RET"
+	db_get wifi-switcher/ftpLocalUser
+	ftpLocalUser="$RET"
+	db_get wifi-switcher/ftpPassphrase
+	ftpPassphrase="$RET"
+
+	# the following queries are separate because they control input validity:
+	db_get wifi-switcher/subnet
+	subnet="$RET"
+	until $(perl -e "{exit 1 unless \"$subnet\" =~ m/^\d{1,3}\.\d{1,3}\.\d{1,3}\.0\$/; }")
+	do
+	    echo "Invalid subnet $subnet entered, please reenter."
+	    db_input critical wifi-switcher/subnet || true
+	    db_go
+	    db_get wifi-switcher/subnet
+	    subnet="$RET"
+	done
+	subnetPart=$(echo $subnet |sed "s/\([0-9]\+\)\\.\([0-9]\+\)\\.\([0-9]\+\)\\..*/\1.\2.\3./")
+
+	echo -e "$ftpVirtualUser\n$ftpPassphrase" | db_load -T -t hash /etc/vsftpd-wifi.db
+	# create local ftp user if needed:
+	if getent passwd $ftpLocalUser > /dev/null 2>&1 ; then
+    	    ftpDir=$(getent passwd $ftpLocalUser | awk -F: '{print $6}')
+	else
+	    ftpDir="/srv/ftp"
+	    adduser --home ${ftpDir} --gecos "ftp user" --shell /bin/false --quiet --disabled-password $ftpLocalUser
+	    install -d -o${ftpLocalUser} $ftpDir
+	    chown $ftpLocalUser $ftpDir
+	fi
+	    # chmod 555 $ftpDir
+# 	[ -e $ftpDir/test.txt ] || \
+# echo "wifi-switcher: writing test file to $ftpDir" && \
+# echo "test ftp file" > $ftpDir/test.txt
+		
+	# todo: check if the following block really works:
+# now we comment any $wifiInterface instances in /etc/network/interfaces
+	if $(grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1) ; then
+	    bn=0;  while [ -e /etc/network/interfaces.backup-by-ws-$bn ]; do bn=$((bni+1)) ; done
+	    cat /etc/network/interfaces > /etc/network/interfaces.backup-by-ws-$bn
+	    if [ -e /etc/network/interfaces.backup-by-ws-$bn ] ; then
+		perl -e '$data = `grep -v ^# tmp.txt`;
+@values = split("iface", $data); print $values[0]; shift @values;
+foreach my $val (@values) {
+  if ($val =~ ("^[ \t]*" . "$ENV{wifiInterface}" . "[ \t]+")) {
+    $val =~ s/\n\n/\n/g ;
+    $val =~ s/\n/\n# /g ;
+    print "# iface $val" ; }
+  else {
+    print "\niface$val"; }}
+print "\n";' > /etc/network/interfaces
+	    fi
+	fi
+	
+	sed -i  -e "s/essid/$essid/g"  -e "s/wlan0/$wifiInterface/g" /usr/share/wifi-switcher/hotspot.sh
+	sed -i -e "s/192.168.1./${subnetPart}/g" -e "s/hostname/$essid/g" /etc/network/interfaces.d/wifi-switcher
+	sed -i  -e "s/wlan0/$wifiInterface/g" /etc/init.d/wifi-switcher
+	sed -i  -e "s/hostname/$essid/g"  -e "s/wlan0/$wifiInterface/g" /etc/sudoers.d/wifi-switcher
+	sed -i  -e "s/192.168.1./${subnetPart}/g"  -e "s/option domain-name-servers/option domain-name-servers $nameservers/g" /etc/dhcp/wifi-switcher.conf
+	    # <-- TODO: remove copies
+	sed -i -e "s/hostname/$essid/g" -e "s/wlan0/$wifiInterface/g" -e "s/ad-hoc-wifi-password/$wifiPassphrase/g" /etc/hostapd/wifi-switcher.conf
+	sed -i "s/userID=[[:alnum:]]* and password=[[:alnum:]]*$/userID=$ftpVirtualUser and password=$ftpPassphrase/" /etc/vsftpd.conf.wifi
+	# <-- this line will be used by the /usr/share/wifi-switcher/hotspot.sh utility.
+
+	conf="/etc/default/isc-dhcp-server"
+	# I would be happy to divert /etc/default/isc-dhcp-server using config-package
+	# (see  https://wiki.debian.org/ConfigPackages), writing the line
+	# /etc/default/isc-dhcp-server.wifi perl -0pe 's|[ \t]*DHCPD_CONF=.*$|#$&\nDHCPD_CONF=/etc/dhcp/wifi-switcher.conf|mg; s|[ \t]*INTERFACES=.*$|#$&\nINTERFACES=\"wlan0\"|mg'
+	# into the debian/wifi-switcher.transform file
+	# but /etc/default/isc-dhcp-server file is reported not to belong to any package
+	# so I have to
+	if [ -e $conf ] ; then
+    	    bn=0;  while [ -e ${conf}.backup-by-ws-$bn ]; do bn=$((bni+1)) ; done
+	    mv ${conf} ${conf}.backup-by-ws-$bn
+	fi
+	cd /etc/default/ ; ln -s isc-dhcp-server.wifi isc-dhcp-server ; cd - >  /dev/null 2>&1
+	sed -i -e "s/wlan0/$wifiInterface/g" ${conf}
+	
+	chmod g=rx /etc/wpa_supplicant/ws-action.sh
+	chmod o=rx /etc/init.d/wifi-switcher
+	chmod o=rx /usr/bin/wifi-switcher
+	[ -e /etc/wpa_supplicant/wifi-switcher.conf ] || touch /etc/wpa_supplicant/wifi-switcher.conf
+	chgrp netdev  /etc/wpa_supplicant/wifi-switcher.conf /etc/wpa_supplicant/ws-action.sh
+	chmod g=rw /etc/wpa_supplicant/wifi-switcher.conf
+	chmod 0440 /etc/sudoers.d/wifi-switcher
+	chmod 600 /etc/vsftpd-wifi.db /etc/vsftpd.conf.wifi
+	chmod o=rx /usr/share/wifi-switcher/hotspot.sh
+
+ 	# echo "Expecting wifi-switcher to be the monopolist in using $i daemon, I disable its autostart and divert its configuration"
+	for i in $(service --status-all | grep "hostapd\|vsftpd\|x11-common" | awk '{print $NF}') ; do
+	    update-rc.d -f $i remove
+	done
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+	echo "wifi-switcher: postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+
+#DEBHELPER#
+
+exit 0

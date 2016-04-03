@@ -1,0 +1,2 @@
+# /etc/default/isc-dhcp-server.wifi perl -0pe 's|^[# \t]*DHCPD_CONF=.*$|# was: $&\n# <-- changed by wifi-switcher to\nDHCPD_CONF=/etc/dhcp/wifi-switcher.conf|mg; s|^[# \t]*INTERFACES=.*$|# was: $&\n# <-- changed by wifi-switcher to\nINTERFACES=\"wlan0\"|mg'
+/etc/default/hostapd.wifi perl -0pe 's|^[# \t]*DAEMON_CONF=.*$|# was: $&\n# <-- changed by wifi-switcher to\nDAEMON_CONF=/etc/hostapd/wifi-switcher.conf|mg or die'

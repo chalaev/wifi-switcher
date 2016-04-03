@@ -1,0 +1,5 @@
+wifi-switcher (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #805116).
+
+ -- Oleg Shalaev <chalaev@gmail.com>  Wed, 07 Oct 2015 22:03:16 -0400

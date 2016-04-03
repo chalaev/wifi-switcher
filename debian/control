@@ -1,0 +1,25 @@
+Source: wifi-switcher
+Section: net
+Priority: optional
+Maintainer: Oleg Shalaev <chalaev@gmail.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+Homepage: http://chalaev.com/wifi-switcher
+#Vcs-Git: git://anonscm.debian.org/collab-maint/wifi-switcher.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/wifi-switcher.git;a=summary
+
+Package: wifi-switcher
+Architecture: all
+Depends: ${misc:Depends}, bash, sysvinit-utils, iproute2, wireless-tools, config-package-dev (>= 5.0), perl-tk, wpasupplicant, sudo, debconf (>= 0.2.17), po-debconf, sed (>= 4), awk, apg, db-util, isc-dhcp-server (>= 4.3.1), vsftpd, hostapd
+Recommends:  icewm | icewm-experimental | pdmenu, openssh-server
+Provides: ${diverted-files}
+Conflicts: network-manager, wicd, ${diverted-files}
+Description: wifi-manager for icewm and pdmenu
+ This is a perl wrapper for wpa_supplicant, wpa_cli, and udhcpc.  Switches
+ between wifi networks configured in the wpasupplicant configuration file.
+ Scans for newly detected wireless SSIDs, easily connects to previously unknown
+ (unprotected and WPA2) networks.  (More sophisticated enterprise wireless
+ configurations must be manually added to the wpasupplicant configuration file.)
+ May work as a dynamic menu item with icewm or with pdmenu.  With pdmenu or
+ standalone works as a console wifi-manager. Can setup its own ad-hoc network
+ and work as an ftp-server (say, for a wifi-gadget).
