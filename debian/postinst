@@ -13,10 +13,12 @@ case "$1" in
 	db_beginblock
 	# setting wireless interface name:
 	allInterfaces=$(ip link show | awk -F: '/^[0-9]+:/ { if ($2 !~ / *lo/)  {gsub(" ","",$2); print $2 }}' | sort -r)
-	# <-- may be I should display interactive choice menu in the future
-	db_get wifi-switcher/wifiInterface
+	db_subst wifi-switcher/wifiInterface allInterfaces $allInterfaces
+	db_get wifi-switcher/essid wifi-switcher/wifiInterface
 	if [ -z "$RET" ]; then # unset or empty string
-	    db_set wifi-switcher/wifiInterface $(echo "$allInterfaces" | head -n1)
+	    db_subst wifi-switcher/wifiInterface defaultWifiInterface $(echo "$allInterfaces" | head -n1)
+	else
+	    db_subst wifi-switcher/wifiInterface defaultWifiInterface $RET
 	fi
 	db_input medium wifi-switcher/wifiInterface || true
 	
@@ -29,7 +31,7 @@ case "$1" in
 	db_get wifi-switcher/nameservers
 	if [ -z "$RET" ]; then # unset or empty string
 	    nameServerList=$(grep nameserver /etc/resolv.conf | awk '{print $2}'| sed "s/$/,/")
-	    db_set wifi-switcher/nameservers $(echo $nameServerList | sed "s/,$//")
+	    db_set wifi-switcher/nameservers $(echo "$nameServerList" | sed "s/,$//" | sort -u)
 	fi
 	db_input medium wifi-switcher/nameservers || true
 

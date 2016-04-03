@@ -3,8 +3,10 @@ Type: title
 Description: wifi-switcher
 
 Template: wifi-switcher/wifiInterface
-Type: string
-Description: Choose wifi network interface:
+Type: select
+Choices: ${allInterfaces}
+Default: ${defaultWifiInterface}
+Description: Choose wifi network interface.
 
 Template: wifi-switcher/essid
 Type: string
