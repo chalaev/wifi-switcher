@@ -30,11 +30,6 @@ info)
 	echo "can not read /etc/hostapd/wifi-switcher.conf, consider running me with root priviledges"
     fi
     
-    if [ -r /etc/vsftpd.conf ] ; then
-	grep "# To access ftp server" /etc/vsftpd.conf | sed "s/^# //"
-    else
-	echo "can not read /etc/vsftpd.conf, consider running me with root priviledges"
-    fi
     echo "When you enter the hotspot mode, find out the server address from the \"hostname -I\" command"
     # now we examine existing wifi networks.
     # TO BE TESTED in case when there are no wifi networks

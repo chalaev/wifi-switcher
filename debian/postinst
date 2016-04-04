@@ -23,27 +23,27 @@ case "$1" in
 	db_input medium wifi-switcher/wifiInterface || true
 	
 	db_get wifi-switcher/essid
-	if [ -z "$RET" ]; then # unset or empty string
-	    db_set wifi-switcher/essid "$(hostname)"
+	if [ -z "$RET" ]; then
+	    db_set wifi-switcher/essid `hostname`
 	fi
 	db_input medium wifi-switcher/essid || true
 	
 	db_get wifi-switcher/nameservers
-	if [ -z "$RET" ]; then # unset or empty string
-	    nameServerList=$(grep nameserver /etc/resolv.conf | awk '{print $2}'| sed "s/$/,/")
+	if [ -z "$RET" ]; then
+	    nameServerList=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 	    db_set wifi-switcher/nameservers $(echo "$nameServerList" | sed "s/,$//" | sort -u)
 	fi
 	db_input medium wifi-switcher/nameservers || true
 
 	db_get wifi-switcher/wifiPassphrase
-	if [ -z "$RET" ]; then # unset or empty string
-	    db_set wifi-switcher/wifiPassphrase $(apg -MNcl -a1 -n1)
+	if [ -z "$RET" ]; then
+	    db_set wifi-switcher/wifiPassphrase `apg -MNcl -a1 -n1`
 	fi
 	db_input medium wifi-switcher/wifiPassphrase || true
 	
 	db_get wifi-switcher/ftpPassphrase
-	if [ -z "$RET" ]; then # unset or empty string
-	    db_set wifi-switcher/ftpPassphrase $(apg -MNcl -a1 -n1)
+	if [ -z "$RET" ]; then
+	    db_set wifi-switcher/ftpPassphrase `apg -MNcl -a1 -n1`
 	fi
 	db_input medium wifi-switcher/ftpPassphrase || true
 	
@@ -56,7 +56,6 @@ case "$1" in
 	#############
 	db_get wifi-switcher/wifiInterface
 	wifiInterface="$RET"
-	# echo "setting wifiInterface to $wifiInterface"
 	db_get wifi-switcher/essid
 	essid="$RET"
 	db_get wifi-switcher/nameservers
@@ -70,7 +69,7 @@ case "$1" in
 	db_get wifi-switcher/ftpPassphrase
 	ftpPassphrase="$RET"
 
-	# the following queries are separate because they control input validity:
+	# the following queries control input validity:
 	db_get wifi-switcher/subnet
 	subnet="$RET"
 	until $(perl -e "{exit 1 unless \"$subnet\" =~ m/^\d{1,3}\.\d{1,3}\.\d{1,3}\.0\$/; }")
@@ -84,7 +83,6 @@ case "$1" in
 	subnetPart=$(echo $subnet |sed "s/\([0-9]\+\)\\.\([0-9]\+\)\\.\([0-9]\+\)\\..*/\1.\2.\3./")
 
 	echo -e "$ftpVirtualUser\n$ftpPassphrase" | db_load -T -t hash /etc/vsftpd-wifi.db
-	# create local ftp user if needed:
 	if getent passwd $ftpLocalUser > /dev/null 2>&1 ; then
     	    ftpDir=$(getent passwd $ftpLocalUser | awk -F: '{print $6}')
 	else
@@ -98,13 +96,11 @@ case "$1" in
 # echo "wifi-switcher: writing test file to $ftpDir" && \
 # echo "test ftp file" > $ftpDir/test.txt
 		
-	# todo: check if the following block really works:
 # now we comment any $wifiInterface instances in /etc/network/interfaces
 	if $(grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1) ; then
 	    bn=0;  while [ -e /etc/network/interfaces.backup-by-ws-$bn ]; do bn=$((bni+1)) ; done
 	    cat /etc/network/interfaces > /etc/network/interfaces.backup-by-ws-$bn
-	    if [ -e /etc/network/interfaces.backup-by-ws-$bn ] ; then
-		perl -e '$data = `grep -v ^# tmp.txt`;
+	    perl -e '$data = `grep -v ^# /etc/network/interfaces.backup-by-ws-$bn`;
 @values = split("iface", $data); print $values[0]; shift @values;
 foreach my $val (@values) {
   if ($val =~ ("^[ \t]*" . "$ENV{wifiInterface}" . "[ \t]+")) {
@@ -114,7 +110,6 @@ foreach my $val (@values) {
   else {
     print "\niface$val"; }}
 print "\n";' > /etc/network/interfaces
-	    fi
 	fi
 	
 	sed -i  -e "s/essid/$essid/g"  -e "s/wlan0/$wifiInterface/g" /usr/share/wifi-switcher/hotspot.sh
@@ -122,7 +117,6 @@ print "\n";' > /etc/network/interfaces
 	sed -i  -e "s/wlan0/$wifiInterface/g" /etc/init.d/wifi-switcher
 	sed -i  -e "s/hostname/$essid/g"  -e "s/wlan0/$wifiInterface/g" /etc/sudoers.d/wifi-switcher
 	sed -i  -e "s/192.168.1./${subnetPart}/g"  -e "s/option domain-name-servers/option domain-name-servers $nameservers/g" /etc/dhcp/wifi-switcher.conf
-	    # <-- TODO: remove copies
 	sed -i -e "s/hostname/$essid/g" -e "s/wlan0/$wifiInterface/g" -e "s/ad-hoc-wifi-password/$wifiPassphrase/g" /etc/hostapd/wifi-switcher.conf
 	sed -i "s/userID=[[:alnum:]]* and password=[[:alnum:]]*$/userID=$ftpVirtualUser and password=$ftpPassphrase/" /etc/vsftpd.conf.wifi
 	# <-- this line will be used by the /usr/share/wifi-switcher/hotspot.sh utility.
@@ -148,7 +142,7 @@ print "\n";' > /etc/network/interfaces
 	chgrp netdev  /etc/wpa_supplicant/wifi-switcher.conf /etc/wpa_supplicant/ws-action.sh
 	chmod g=rw /etc/wpa_supplicant/wifi-switcher.conf
 	chmod 0440 /etc/sudoers.d/wifi-switcher
-	chmod 600 /etc/vsftpd-wifi.db /etc/vsftpd.conf.wifi
+	chmod 600 /etc/vsftpd-wifi.db /etc/vsftpd.conf.wifi /etc/hostapd/wifi-switcher.conf
 	chmod o=rx /usr/share/wifi-switcher/hotspot.sh
 
  	# echo "Expecting wifi-switcher to be the monopolist in using $i daemon, I disable its autostart and divert its configuration"
