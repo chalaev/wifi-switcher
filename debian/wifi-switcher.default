@@ -1,8 +1,0 @@
-#
-# wifi-switcher is a simple alternative to wicd and network-manager.
-# It uses icewm/pdmenu together with command-line text-mode utilities
-# (hostapd, wpa_supplicant, udhcpc, vsftpd)
-# to switch between wifi-networks and organize a wireless hotspot.
-
-# Wireless network interface (see output of `ip addr ls` for available interfaces):
-wifi_interface="wlan0"

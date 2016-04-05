@@ -1,10 +1,5 @@
-etc/default/isc-dhcp-server.wifi etc/default/
 etc/vsftpd.conf.wifi etc/
 etc/pam.d/vsftpd.wifi etc/pam.d/
-etc/dhcp/wifi-switcher.conf etc/dhcp/
-etc/network/interfaces.d/wifi-switcher etc/network/interfaces.d/
-etc/sudoers.d/wifi-switcher etc/sudoers.d/
-etc/hostapd/wifi-switcher.conf etc/hostapd/
 etc/wpa_supplicant/ws-action.sh etc/wpa_supplicant/
 usr/bin/wifi-switcher usr/bin/
 usr/share/wifi-switcher/hotspot.sh usr/share/wifi-switcher/

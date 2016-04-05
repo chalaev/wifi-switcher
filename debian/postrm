@@ -1,19 +1,24 @@
 #!/bin/bash
-# <-- using bash arithmetic
+# using bash arithmetic
 
 set -e
 
-case "$1" in	
+case "$1" in
     purge)
-	
+
 	for i in $(service --status-all | grep "hostapd\|vsftpd\|x11-common" | awk '{print $NF}') ; do
 	    echo "restoring default service for $i"
 	    update-rc.d -f $i defaults
 	done
-	
-	if [ -e /etc/vsftpd-wifi.db ]; then
-	    rm /etc/vsftpd-wifi.db
-	fi
+
+	for i in /etc/wpa_supplicant/wifi-switcher.conf /etc/vsftpd-wifi.db
+/etc/sudoers.d/wifi-switcher /etc/network/interfaces.d/wifi-switcher \
+/etc/dhcp/wifi-switcher.conf /etc/hostapd/wifi-switcher.conf \
+/etc/default/isc-dhcp-server.wifi  ; do
+	    if [ -e $i ]; then
+		rm $i
+	    fi
+	done
 
 	bn=0;  while [ -e  /etc/default/isc-dhcp-server.backup-by-ws-$bn ]; do bn=$(( $bn + 1 )) ; done
 	if [ $bn -ge 1 ] ; then
@@ -27,25 +32,25 @@ case "$1" in
 	    cat /etc/network/interfaces.backup-by-ws-$bn > /etc/network/interfaces
 	    rm -f /etc/network/interfaces.backup-by-ws-$bn
 	fi
-    
+
 	[ -e /etc/wpa_supplicant/wifi-switcher.conf ] || rm -rf /etc/wpa_supplicant/wifi-switcher.conf
-	
+
 	#  rm /var/log/wifi-switcher
-	
+
         # if [ -x "$(command -v deluser)" ]; then
         #     deluser --quiet --system wsftp > /dev/null || true
         # else
         #     echo >&2 "not removing wsftp system account because deluser command was not found"
         # fi
-	
+
 	# echo  >&2 "wifi-switcher: remove the ftp user manually if you do not need it any more"
 	exit 0
-	# <-- without this "exit 0", update-rc.d leads to exit code 128
+	# -- without this "exit 0", update-rc.d leads to exit code 128
 	;;
-    
+
     remove|upgrade|faild-upgrade|abort-*|disappear)
         ;;
-        
+
     *)
         echo "postrm called with unknown argument \`$1'" >&2
         exit 1

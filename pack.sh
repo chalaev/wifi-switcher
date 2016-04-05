@@ -2,16 +2,15 @@
 if [ -e debian/control ]; then
     projectName=$(awk "\$1==\"Package:\" {print \$2}"  debian/control)
 fi
-if [ $projectName != "wifi-switcher" ]; then
+if [ -z "$projectName" ] || [ "$projectName" != "wifi-switcher" ]; then
     echo "This is a wrong directory, please change to correct one"
     exit 1
 fi
 if [ -e debian/wifi-switcher ]; then
     rm -r debian/wifi-switcher
 fi
-for i in debian/pre* debian/post* ; do
-    sed -i "s/[ \t]\+$//"  $i
-done
+# remove dangling tabs left by emacs shell-script-mode:
+find debian/ -type f \( -name "pre*" -o -name "post*" \) -exec sed -i "s/[ \t]\+$//" {} \;
 # generate man-files from emacs org-mode ones (note that the original ox-man.el is buggy):
 if `ls /usr/share/emacs/*/lisp/org/ox-man.elc > /dev/null 2>&1` ; then
     oxman=$(ls /usr/share/emacs/*/lisp/org/ox-man.elc)
