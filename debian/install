@@ -1,14 +1,13 @@
-#!/bin/sh
-cp -a etc/default/isc-dhcp-server.wifi etc/default/
-cp -a etc/vsftpd.conf.wifi etc/
-cp -a etc/pam.d/vsftpd.wifi etc/pam.d/
-cp -a etc/dhcp/wifi-switcher.conf etc/dhcp/
-cp -a etc/network/interfaces.d/wifi-switcher etc/network/interfaces.d/
-cp -a etc/sudoers.d/wifi-switcher etc/sudoers.d/
-cp -a etc/hostapd/wifi-switcher.conf etc/hostapd/
-cp -a etc/wpa_supplicant/ws-action.sh etc/wpa_supplicant/
-cp -a usr/bin/wifi-switcher usr/bin/
-cp -a usr/share/wifi-switcher/hotspot.sh usr/share/wifi-switcher/
-cp -a usr/share/wifi-switcher/connected.png usr/share/wifi-switcher/
-cp -a usr/share/wifi-switcher/locked.png usr/share/wifi-switcher/
-cp -a usr/share/wifi-switcher/get-passwords usr/share/wifi-switcher/
+etc/default/isc-dhcp-server.wifi etc/default/
+etc/vsftpd.conf.wifi etc/
+etc/pam.d/vsftpd.wifi etc/pam.d/
+etc/dhcp/wifi-switcher.conf etc/dhcp/
+etc/network/interfaces.d/wifi-switcher etc/network/interfaces.d/
+etc/sudoers.d/wifi-switcher etc/sudoers.d/
+etc/hostapd/wifi-switcher.conf etc/hostapd/
+etc/wpa_supplicant/ws-action.sh etc/wpa_supplicant/
+usr/bin/wifi-switcher usr/bin/
+usr/share/wifi-switcher/hotspot.sh usr/share/wifi-switcher/
+usr/share/wifi-switcher/connected.png usr/share/wifi-switcher/
+usr/share/wifi-switcher/locked.png usr/share/wifi-switcher/
+usr/share/wifi-switcher/get-passwords usr/share/wifi-switcher/

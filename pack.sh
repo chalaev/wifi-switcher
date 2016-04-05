@@ -9,7 +9,10 @@ fi
 if [ -e debian/wifi-switcher ]; then
     rm -r debian/wifi-switcher
 fi
-# generate man-files from emacs org-mode ones:
+for i in debian/pre* debian/post* ; do
+    sed -i "s/[ \t]\+$//"  $i
+done
+# generate man-files from emacs org-mode ones (note that the original ox-man.el is buggy):
 if `ls /usr/share/emacs/*/lisp/org/ox-man.elc > /dev/null 2>&1` ; then
     oxman=$(ls /usr/share/emacs/*/lisp/org/ox-man.elc)
     oxman=$(echo "$oxman" | head -n1)
@@ -20,6 +23,7 @@ if `ls /usr/share/emacs/*/lisp/org/ox-man.elc > /dev/null 2>&1` ; then
 	mv ${wsn}.man man/
     done
 fi
+rm Packages.gz ../wifi-switcher_*
 dh_make -c gpl -e chalaev@gmail.com --indep --yes --createorig
 dpkg-buildpackage -rfakeroot -us -uc
 # See the package local-apt-repository:

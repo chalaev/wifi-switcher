@@ -14,20 +14,20 @@ case "$1" in
 	# setting wireless interface name:
 	allInterfaces=$(ip link show | awk -F: '/^[0-9]+:/ { if ($2 !~ / *lo/)  {gsub(" ","",$2); print $2 }}' | sort -r)
 	db_subst wifi-switcher/wifiInterface allInterfaces $allInterfaces
-	db_get wifi-switcher/essid wifi-switcher/wifiInterface
+	db_get wifi-switcher/wifiInterface
 	if [ -z "$RET" ]; then # unset or empty string
 	    db_subst wifi-switcher/wifiInterface defaultWifiInterface $(echo "$allInterfaces" | head -n1)
 	else
 	    db_subst wifi-switcher/wifiInterface defaultWifiInterface $RET
 	fi
 	db_input medium wifi-switcher/wifiInterface || true
-	
+
 	db_get wifi-switcher/essid
 	if [ -z "$RET" ]; then
 	    db_set wifi-switcher/essid `hostname`
 	fi
 	db_input medium wifi-switcher/essid || true
-	
+
 	db_get wifi-switcher/nameservers
 	if [ -z "$RET" ]; then
 	    nameServerList=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
@@ -40,13 +40,12 @@ case "$1" in
 	    db_set wifi-switcher/wifiPassphrase `apg -MNcl -a1 -n1`
 	fi
 	db_input medium wifi-switcher/wifiPassphrase || true
-	
+
 	db_get wifi-switcher/ftpPassphrase
 	if [ -z "$RET" ]; then
 	    db_set wifi-switcher/ftpPassphrase `apg -MNcl -a1 -n1`
 	fi
 	db_input medium wifi-switcher/ftpPassphrase || true
-	
  	db_input medium wifi-switcher/ftpVirtualUser || true
  	db_input medium wifi-switcher/ftpLocalUser || true
 	db_endblock
@@ -95,10 +94,10 @@ case "$1" in
 # 	[ -e $ftpDir/test.txt ] || \
 # echo "wifi-switcher: writing test file to $ftpDir" && \
 # echo "test ftp file" > $ftpDir/test.txt
-		
+
 # now we comment any $wifiInterface instances in /etc/network/interfaces
-	if $(grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1) ; then
-	    bn=0;  while [ -e /etc/network/interfaces.backup-by-ws-$bn ]; do bn=$((bni+1)) ; done
+	if grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1 ; then
+	    bn=0;  while [ -e /etc/network/interfaces.backup-by-ws-$bn ]; do bn=$(($bn+1)) ; done
 	    cat /etc/network/interfaces > /etc/network/interfaces.backup-by-ws-$bn
 	    perl -e '$data = `grep -v ^# /etc/network/interfaces.backup-by-ws-$bn`;
 @values = split("iface", $data); print $values[0]; shift @values;
@@ -111,15 +110,12 @@ foreach my $val (@values) {
     print "\niface$val"; }}
 print "\n";' > /etc/network/interfaces
 	fi
-	
 	sed -i  -e "s/essid/$essid/g"  -e "s/wlan0/$wifiInterface/g" /usr/share/wifi-switcher/hotspot.sh
 	sed -i -e "s/192.168.1./${subnetPart}/g" -e "s/hostname/$essid/g" /etc/network/interfaces.d/wifi-switcher
 	sed -i  -e "s/wlan0/$wifiInterface/g" /etc/init.d/wifi-switcher
 	sed -i  -e "s/hostname/$essid/g"  -e "s/wlan0/$wifiInterface/g" /etc/sudoers.d/wifi-switcher
 	sed -i  -e "s/192.168.1./${subnetPart}/g"  -e "s/option domain-name-servers/option domain-name-servers $nameservers/g" /etc/dhcp/wifi-switcher.conf
 	sed -i -e "s/hostname/$essid/g" -e "s/wlan0/$wifiInterface/g" -e "s/ad-hoc-wifi-password/$wifiPassphrase/g" /etc/hostapd/wifi-switcher.conf
-	sed -i "s/userID=[[:alnum:]]* and password=[[:alnum:]]*$/userID=$ftpVirtualUser and password=$ftpPassphrase/" /etc/vsftpd.conf.wifi
-	# <-- this line will be used by the /usr/share/wifi-switcher/hotspot.sh utility.
 
 	conf="/etc/default/isc-dhcp-server"
 	# I would be happy to divert /etc/default/isc-dhcp-server using config-package
@@ -129,12 +125,12 @@ print "\n";' > /etc/network/interfaces
 	# but /etc/default/isc-dhcp-server file is reported not to belong to any package
 	# so I have to
 	if [ -e $conf ] ; then
-    	    bn=0;  while [ -e ${conf}.backup-by-ws-$bn ]; do bn=$((bni+1)) ; done
+    	    bn=0;  while [ -e ${conf}.backup-by-ws-$bn ]; do bn=$(($bn+1)) ; done
 	    mv ${conf} ${conf}.backup-by-ws-$bn
 	fi
 	cd /etc/default/ ; ln -s isc-dhcp-server.wifi isc-dhcp-server ; cd - >  /dev/null 2>&1
 	sed -i -e "s/wlan0/$wifiInterface/g" ${conf}
-	
+
 	chmod g=rx /etc/wpa_supplicant/ws-action.sh
 	chmod o=rx /etc/init.d/wifi-switcher
 	chmod o=rx /usr/bin/wifi-switcher
