@@ -1,0 +1,14 @@
+#!/bin/sh -e
+
+#DEBHELPER#
+
+if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
+    undisplace_unlink /etc/default/isc-dhcp-server
+#    dpkg-divert --rename --remove /etc/default/isc-dhcp-server
+   # the following diversion might exist or not:
+   undisplace_unlink /etc/network/interfaces
+# dpkg-divert --rename --remove /etc/network/interfaces
+# ← divert commands are not enough symlinks must be removed before them
+fi
+
+exit 0

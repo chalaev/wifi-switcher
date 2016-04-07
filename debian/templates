@@ -10,7 +10,7 @@ Description: Choose wifi network interface.
 
 Template: wifi-switcher/essid
 Type: string
-Description: Choose SSID for the ad-hoc network
+Description: Choose SSID for the  hotspot (ad-hoc) network
 
 Template: wifi-switcher/wifiPassphrase
 Type: string

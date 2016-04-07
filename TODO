@@ -2,11 +2,14 @@
 2. In /usr/share/wifi-switcher/hotspot.sh use "while getopts" loop to pass options
    a. wifi interface
    b. name of the adhoc network
-3. Move vsftpd, hostapd, and isc-dhcp-server from "Depends" to "Recommends"
+3. Improve package description in debian/control: This is a perl wrapper for
+   wpa_supplicant, wpa_cli, and udhcpc.  Switches between wifi networks configured in
+   the wpasupplicant configuration file.
+4. Move vsftpd, hostapd, and isc-dhcp-server from "Depends" to "Recommends"
    section of the debian/control file and set up trigger so that wifi-switcher
    is reconfigured every time they are installed/removed.
-4. use osd notifications like "(dis)connected from/to wifi network"
+5. use osd notifications like "(dis)connected from/to wifi network"
    -- use dunst or another notification daemon to notify user of connections.
-5. create emacs interface for wifi-switcher
-6. Focus on using systemd? I do not want to loose compatibility with sysvinit...
+6. create emacs interface for wifi-switcher
+7. Focus on using systemd? I do not want to loose compatibility with sysvinit...
 

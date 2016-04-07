@@ -3,7 +3,7 @@
 
 use List::Util qw(min max first);
 use List::MoreUtils qw(uniq);
-use Tk;			# needs package "perl-tk"
+use Tk;			# requires package "perl-tk"
 use Tk::DialogBox;
 use Cwd 'abs_path';
 use Getopt::Long; # for GetOptions

@@ -1,12 +1,15 @@
 * General issues
-1. /etc/wpa_supplicant/wifi-switcher.conf is not erased during purge
-2. Test hotspot.sh when there are no wifi networks available
-3. When upgrading, installer asks if it should replace "manually changed" files.
-4. Sometimes wifi-switcher is lying about the network ssid to which it is connected.
+1. Somehow two interfaces are chosen by postinst instead of one.
+   Moreover, the "select" menu does not appear during `dpkg-reconfigure wifi-switcher`
+   -- this just means that "Template: wifi-switcher/wifiInterface" is invalid
+2. /etc/wpa_supplicant/wifi-switcher.conf is not erased during purge
+3. Test hotspot.sh when there are no wifi networks available
+4. When upgrading, installer asks if it should replace "manually changed" files.
+5. Sometimes wifi-switcher is lying about the network ssid to which it is connected.
    This may happen when there are several known
    (listed in /etc/wpa_supplicant/wifi-switcher.conf) networks available simultaneously.
    The real ssid is given by the last line of `grep SSID /var/log/wifi-switcher.log`
-5. Unfortunately people tend to broadcast more than they actually need littering ether
+6. Unfortunately people tend to broadcast more than they actually need littering ether
    with numerous hotspots. Sometimes (when there are too many wifi networks) you have to
    choose the optimal wireless-channel in the file
    /etc/network/interfaces.d/wifi-switcher. I had to do this when there were 30 wifi
@@ -14,9 +17,9 @@
    only three channels, and my (non-free firmware-brcm80211) wireless-card driver
    perhaps does not realise that one should choose less occupied radio frequencies
    (channels) for better connection quality.
-6. Hotspot mode interrupted by the dpkg-reconfigure command is not restored after
+7. Hotspot mode interrupted by the dpkg-reconfigure command is not restored after
    reconfiguring.
-7. I suspect that sometimes the interface (say, wlan0) has to be brought up manually using the `ifconfig wlan0 up` command.
+8. I suspect that sometimes the interface (say, wlan0) has to be brought up manually using the `ifconfig wlan0 up` command.
 
 * Issues on older debian versions
 1. Inactive /etc/sudoers.d/ As of Debian version 1.7.2p1-1, the default /etc/sudoers

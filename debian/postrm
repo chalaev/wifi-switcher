@@ -1,7 +1,4 @@
-#!/bin/bash
-# using bash arithmetic
-
-set -e
+#!/bin/sh -e
 
 case "$1" in
     purge)
@@ -11,29 +8,15 @@ case "$1" in
 	    update-rc.d -f $i defaults
 	done
 
-	for i in /etc/wpa_supplicant/wifi-switcher.conf /etc/vsftpd-wifi.db
+	for i in /etc/wpa_supplicant/wifi-switcher.conf /etc/vsftpd-wifi.db \
 /etc/sudoers.d/wifi-switcher /etc/network/interfaces.d/wifi-switcher \
 /etc/dhcp/wifi-switcher.conf /etc/hostapd/wifi-switcher.conf \
-/etc/default/isc-dhcp-server.wifi  ; do
+/etc/default/isc-dhcp-server.wifi  /etc/default/wifi-switcher \
+/etc/wpa_supplicant/wifi-switcher.conf ; do
 	    if [ -e $i ]; then
 		rm $i
 	    fi
 	done
-
-	bn=0;  while [ -e  /etc/default/isc-dhcp-server.backup-by-ws-$bn ]; do bn=$(( $bn + 1 )) ; done
-	if [ $bn -ge 1 ] ; then
-	    bn=$(( $bn - 1 ))
-	    cat /etc/default/isc-dhcp-server.backup-by-ws-$bn > /etc/default/isc-dhcp-server
-	    rm -f /etc/default/isc-dhcp-server.backup-by-ws-$bn
-	fi
-	bn=0;  while [ -e  /etc/network/interfaces.backup-by-ws-$bn ]; do bn=$(( $bn + 1 )) ; done
-	if [ $bn -ge 1 ] ; then
-	    bn=$(( $bn - 1 ))
-	    cat /etc/network/interfaces.backup-by-ws-$bn > /etc/network/interfaces
-	    rm -f /etc/network/interfaces.backup-by-ws-$bn
-	fi
-
-	[ -e /etc/wpa_supplicant/wifi-switcher.conf ] || rm -rf /etc/wpa_supplicant/wifi-switcher.conf
 
 	#  rm /var/log/wifi-switcher
 
