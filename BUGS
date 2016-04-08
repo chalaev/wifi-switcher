@@ -1,15 +1,17 @@
-* General issues
-1. Somehow two interfaces are chosen by postinst instead of one.
-   Moreover, the "select" menu does not appear during `dpkg-reconfigure wifi-switcher`
-   -- this just means that "Template: wifi-switcher/wifiInterface" is invalid
-2. /etc/wpa_supplicant/wifi-switcher.conf is not erased during purge
-3. Test hotspot.sh when there are no wifi networks available
-4. When upgrading, installer asks if it should replace "manually changed" files.
-5. Sometimes wifi-switcher is lying about the network ssid to which it is connected.
+* wifi-switcher-related issues
+1. Test hotspot.sh when there are no wifi networks available.
+2. Sometimes wifi-switcher is lying about the network ssid to which it is connected.
    This may happen when there are several known
    (listed in /etc/wpa_supplicant/wifi-switcher.conf) networks available simultaneously.
-   The real ssid is given by the last line of `grep SSID /var/log/wifi-switcher.log`
-6. Unfortunately people tend to broadcast more than they actually need littering ether
+   The real ssid is given by `grep SSID /var/log/wifi-switcher.log| head -n1`
+3. Hotspot mode interrupted by the dpkg-reconfigure command is not restored after
+   reconfiguring.
+4. I suspect that sometimes the interface (say, wlan0) has to be brought up manually using the `ifconfig wlan0 up` command.
+
+* wifi-switcher-unrelated issues
+1. When I soft-block wifi with Fn-F2 key combination on my Asus EEE, and then suspend the system with Fn-z (Fn-F1), wifi gets hard-blocked (see the output of
+   `rfkill list`), and only reboot helps to restore it.
+2. Unfortunately people tend to broadcast more than they actually need littering ether
    with numerous hotspots. Sometimes (when there are too many wifi networks) you have to
    choose the optimal wireless-channel in the file
    /etc/network/interfaces.d/wifi-switcher. I had to do this when there were 30 wifi
@@ -17,9 +19,6 @@
    only three channels, and my (non-free firmware-brcm80211) wireless-card driver
    perhaps does not realise that one should choose less occupied radio frequencies
    (channels) for better connection quality.
-7. Hotspot mode interrupted by the dpkg-reconfigure command is not restored after
-   reconfiguring.
-8. I suspect that sometimes the interface (say, wlan0) has to be brought up manually using the `ifconfig wlan0 up` command.
 
 * Issues on older debian versions
 1. Inactive /etc/sudoers.d/ As of Debian version 1.7.2p1-1, the default /etc/sudoers
@@ -32,5 +31,3 @@
    which is read by the command
    source /etc/network/interfaces.d/*
    which might be absent on earlier debian versions
-Sometimes (when there are too many wifi networks) you have to choose the optimal
-wireless-channel in the file /etc/network/interfaces.d/wifi-switcher.

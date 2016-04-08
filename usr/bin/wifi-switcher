@@ -15,14 +15,11 @@ binmode STDOUT, ':utf8'; # disables annoying warning
 @modifiers = grep /^--\w+/, @ARGV; # options starting with two dash symbols
 
 $interface="wlan0"; # default
-if (matchAnyMemberQ('^--interface=.*' , \@modifiers)) {
-  GetOptions( 'interface=s' => \$interface, # wifi interface; other lines are unused
-		'ascii' => \$tmp, # to avoid errors we enumerate all options
-		'pdmenu' => \$tmp,
-		'emacs' => \$tmp,
-		'ascii' => \$tmp,
-		'icewm' => \$tmp,
-		'wifi-hotspot' => \$tmp );}
+open(wpaSuppFile, "</etc/default/wifi-switcher") || die "can not read /etc/default/wifi-switcher\n";
+    @lines = split("\n", <wpaSuppFile>);
+    foreach (@lines) {
+	if  ($_ =~ ('wifi_interface="(.*)"[ \t]*')) { $interface=$1; }}
+close(wpaSuppFile);
 
 $theProg=abs_path(__FILE__)." ".(join " ",@opts,@modifiers);
 
@@ -142,24 +139,25 @@ sub qualitySymbol {
 
 #### END OF "SCAN" BLOCK #############################################
 else {#  if ($commands[0] ne "scan")
-# здесь в любом случае придётся сканировать wpa_supplicant.conf
-# чтобы понять, для каких сетей доступна опция "forget"
+# here we anyway have to scan wpa_supplicant.conf
+# in order to understand for what networks "forget" menu item is available.
 $inFile=("<" . $wpaSupplicantConf);
-open(wpaSuppFile, $inFile) || die "can not read file\n"; # debug
+open(wpaSuppFile, $inFile) || die "can not read file $wpaSupplicantConf\n";
 my $fileText = join " ", grep {$_ !~ "^[ \t]*#" } <wpaSuppFile>; # excluding commented lines
 close(wpaSuppFile);
 
 @profiles = split("network=\\{", $fileText);
 shift @profiles; #removes the header before the first network entry
 
-### НАЧАЛО блока чтения конфиг. файла
-foreach $profile (@profiles) {
+### Begin reading config file
+foreach $profile (@profiles) { # @profiles contains networks info from wpa_supplicant conf file
     @lines = split("\n", $profile);
     foreach $line (@lines) {# parsing string parameters from the config file
-	foreach $parName (@orderedParams) {
+      foreach $parName (@orderedParams) {
+	$line =~ s/[ \t]*}.*//; # removing "}"
 	    if  ($line =~ ('[ \t]*'.$parName.'[ \t]*=[ \t]*"(.+)"'))  {$rec{$parName}=$1; }
 	    elsif ($line =~ ('[ \t]*'.$parName.'[ \t]*=[ \t]*(.+)'))  {$rec{$parName}=$1; }}}
-    unless (memberQ($rec{'ssid'},\@allNames)) {# excluding duplicates; @allNames (defined below) is a list of already known SSIDs
+    unless ((($rec{'key_mgmt'} eq "WPA-PSK") && (not(defined $rec{'psk'}))) || (memberQ($rec{'ssid'},\@allNames))) {# excluding duplicates; @allNames (defined below) is a list of already known SSIDs
 	unless (defined $rec{'priority'}) { $rec{'priority'}=0; }
 	push @pfs, {%rec}; undef %rec;  # pushing cloned hash and cleaning its value
 	@allNames=map { $$_{'ssid'} } @pfs; }} # array of all known SSIDs
@@ -168,7 +166,7 @@ foreach $profile (@profiles) {
 undef @spfs;
 foreach $pri (@pris) { push @spfs, grep { @$_{'priority'} == $pri} @pfs;} # sorting done
 foreach $tp (@spfs) { $$tp{'priority'}=3*($i++);}
-### КОНЕЦ блока чтения конфиг. файла
+### Done reading config file
 
 if ($commands[0] eq "act") {
     if (memberQ($commands[1],\@allNames) || memberQ($commands[2],\@knownAuthMethods)) {# connecting allowed

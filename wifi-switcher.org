@@ -54,22 +54,17 @@ avoids using unicode symbols to report the wifi signal strength,
 with this modifier, the program will generate an extra menu line for switching
 into/from the ad-hoc wifi server (hotspot) mode.
 
---interface=STRING\\
-specifies interface, will use wlan0 if not specified.
-Names of available network interfaces are available, e.g., in the output of the `ip addr ls` command.
-
 * USAGE
 Both in (graphical) icewm, and in (textual) pdmenu wifi-switcher generates dynamic menus:
 ** in icewm menu
 A typical line in the ~/.icewm/menu file:
 
-menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot --interface=wlp2s0b1
+menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 
 This menu line produces dynamic icewm-menu entries with available wifi networks.
 If the connection is established the corresponding network is shown on the
 second line with the /usr/share/wifi-switcher/connected.png icon.  Protected
 networks are marked with the /usr/share/wifi-switcher/locked.png icon.
-An optional parameter "--interface" specifies wireless interface (wlan0 by default).
 ** in pdmenu
 A typical entry in the ~/.pdmenu file (similar to the icewm menu entry described above):
 

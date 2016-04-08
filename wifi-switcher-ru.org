@@ -63,22 +63,17 @@ forget SSID\\
 с этим модификатором программа сгенерирует дополнительную строку динамического
 меню для перехода в режим wifi-сервера или выхода из него,
 
---interface=СТРОКА\\
-задаёт интерфейс беспроводной сети, wlan0 по умолчанию.
-Имена доступных сетевых интерфейсов можно узнать, например, воспользовавшись командой `ip addr ls`
-
 * Примеры использования
 И в оконном менеджере icewm, и в текстовом меню pdmenu wifi-switcher генерирует
 динамические меню.
 ** в меню icewm
 Типичная строка вызова wifi-switcher в файле ~/.icewm/menu выглядит так:
 
-menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot --interface=wlp2s0b1
+menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 
 Эта строка генерирует динамическое меню для каждой из доступных беспроводных сетей.
 Имя беспроводной сети, с которой установлено соединение, сопровождается иконкой
 /usr/share/wifi-switcher/connected.png
-Необязательный параметр "--interface" указывает имя интерфейса беспроводной сети (по умолчанию wlan0).
 ** в pdmenu
 В файле ~/.pdmenu wifi-switcher может быть вызван следующими командами, действие
 которых эквивалентно вышеописанной строке для icewm:
@@ -86,7 +81,7 @@ menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot --inte
 group:wifi\\
 	exec::makemenu:\ \\
 		echo "menu:mainWiFimenu:Choose network:Select the network" ; \ \\
-		/usr/bin/wifi-switcher -pdmenu scan --wifi-hotspot --interface=wlp2s0b1\\
+		/usr/bin/wifi-switcher -pdmenu scan --wifi-hotspot\\
 	show:::mainWiFimenu\\
 	remove:::mainWiFimenu\\
 endgroup

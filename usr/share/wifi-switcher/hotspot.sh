@@ -48,13 +48,13 @@ info)
 bugreport)
     echo "This is a bugreport for wifi-switcher"
     for com in "ip addr ls" "ls -lth /etc/default/hostapd*" "ls -lth /etc/default/isc*" \
-"ls -lth /var/lib/dhcp/dhc*leases" "ls /run/*.pid" "ls /var/run/*.pid" "ls -lthR /etc/wpa_supplicant*" \
+"ls -lth /var/lib/dhcp/dhc*leases" "ls /{var/,/}run/{udhcpc,wpa_*,hostapd,vsftp}.pid"  "ls -lthR /etc/wpa_supplicant*" \
 "ls -lthR /etc/vsftp*" "ls -lthR /etc/hostapd*" "ls -lthR /etc/dhcp*" "tail -n30 /var/log/wifi-switcher.log" ; do
 	echo "####\nThe output of the \"$com\" command is"
 	LANG=C $com
     done
     # We will hide some fields in the files:
-    maskFields="identity password psk"
+    maskFields="identity password psk wpa_passphrase"
     hidePass=""; for fi in $maskFields ; do hidePass="$hidePass -e s/${fi}=.*/${fi}=xxx/" ; done
     for cf in /etc/default/hostapd /etc/default/isc-dhcp-server /etc/pam.d/vsftpd /etc/vsftpd.conf \
 /etc/dhcp/wifi-switcher.conf /etc/wpa_supplicant/wifi-switcher.conf \
