@@ -1,3 +1,10 @@
+wifi-switcher is a simple automatic switcher between wifi networks for laptops with
+icewm (window manager) or pdmenu (console menu program).
+To be used as a simple replacement of network manager or wicd
+  (simplicity often means reliability).
+
+See the description in .org files
+
 Configuring icewm and pdmenu
 ===================
 A line in my ~/.icewm/menu file generating wifi menu is
