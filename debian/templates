@@ -10,7 +10,7 @@ Description: Choose wifi network interface.
 
 Template: wifi-switcher/essid
 Type: string
-Description: Choose SSID for the  hotspot (ad-hoc) network
+Description: Choose SSID for the  hotspot (ad-hoc) network (no spaces allowed).
 
 Template: wifi-switcher/wifiPassphrase
 Type: string
@@ -24,11 +24,6 @@ Template: wifi-switcher/ftpVirtualUser
 Type: string
 Default: switcher
 Description: Choose ftp user name in the hotspot (ad-hoc) network
-
-Template: wifi-switcher/ftpLocalUser
-Type: string
-Default: locftp
-Description: Choose local user name which will own ftp directory
 
 Template: wifi-switcher/nameservers
 Type: string

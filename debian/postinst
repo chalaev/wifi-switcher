@@ -48,7 +48,6 @@ case "$1" in
 	fi
 	db_input medium wifi-switcher/ftpPassphrase || true
  	db_input medium wifi-switcher/ftpVirtualUser || true
- 	db_input medium wifi-switcher/ftpLocalUser || true
 	db_endblock
 	db_input medium wifi-switcher/subnet || true
 	#############
@@ -57,15 +56,13 @@ case "$1" in
 	db_get wifi-switcher/wifiInterface
 	export wifiInterface="$RET"
 	db_get wifi-switcher/essid
-	essid="$RET"
+	essid=$(echo "$RET" | sed "s/[ \t]\+//g")
 	db_get wifi-switcher/nameservers
 	nameservers="$RET"
 	db_get wifi-switcher/wifiPassphrase
 	wifiPassphrase="$RET"
 	db_get wifi-switcher/ftpVirtualUser
 	ftpVirtualUser="$RET"
-	db_get wifi-switcher/ftpLocalUser
-	ftpLocalUser="$RET"
 	db_get wifi-switcher/ftpPassphrase
 	ftpPassphrase="$RET"
 
@@ -81,26 +78,21 @@ case "$1" in
 	    subnet="$RET"
 	done
 	subnetPart=$(echo $subnet |sed "s/\([0-9]\+\)\\.\([0-9]\+\)\\.\([0-9]\+\)\\..*/\1.\2.\3./")
+	echo "$ftpVirtualUser\n$ftpPassphrase" | db_load -T -t hash /etc/vsftpd-wifi.db
+	[ -d /srv/ftp/$ftpVirtualUser ] || mkdir -p /srv/ftp/$ftpVirtualUser
+	# chmod a+rx  /srv/ftp/$ftpVirtualUser
 
-	echo -e "$ftpVirtualUser\n$ftpPassphrase" | db_load -T -t hash /etc/vsftpd-wifi.db
-	if getent passwd $ftpLocalUser > /dev/null 2>&1 ; then
-    	    ftpDir=$(getent passwd $ftpLocalUser | awk -F: '{print $6}')
-	else
-	    ftpDir="/srv/ftp"
-	    adduser --home ${ftpDir} --gecos "ftp user" --shell /bin/false --quiet --disabled-password $ftpLocalUser
-	    install -d -o${ftpLocalUser} $ftpDir
-	    chown $ftpLocalUser $ftpDir
-	fi
 	    # chmod 555 $ftpDir
 # 	[ -e $ftpDir/test.txt ] || \
 # echo "wifi-switcher: writing test file to $ftpDir" && \
 # echo "test ftp file" > $ftpDir/test.txt
 
 	cat > /etc/sudoers.d/wifi-switcher <<EOF
-# This file is created and will be overwritten by the installation (postinst) script
+# This file belongs to the wifi-switcher package;
+# it is created and will be overwritten by the installation (postinst) script.
 %netdev ALL=NOPASSWD:/sbin/iwlist ${wifiInterface} scan
 %netdev ALL=NOPASSWD:/sbin/ifdown ${wifiInterface}
-%netdev ALL=NOPASSWD:/sbin/ifup ${wifiInterface}=${essid}
+%netdev ALL=NOPASSWD:/sbin/ifup ${wifiInterface}=wifiswitcher
 %netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher restart
 %netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher start
 %netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher stop
@@ -112,12 +104,16 @@ case "$1" in
 %netdev ALL=NOPASSWD:/usr/sbin/service vsftpd stop
 EOF
 	cat > /etc/network/interfaces.d/wifi-switcher <<EOF
-# This file is created and will be overwritten by the installation (postinst) script
+# This file belongs to the wifi-switcher package;
+# it is created and will be overwritten by the installation (postinst) script.
 # wifi-switcher configuration in the hotspot mode
-iface ${essid} inet static
-wireless-essid ${essid}
-# Sometimes (when there are too many wifi networks) you have to choose optimal (less occupied) wireless-channel:
-# wireless-channel 10
+iface wifiswitcher inet static
+wireless-essid $essid
+# Strangely wifi networks are often crowded at channels number 1 and 11
+# while the remaining channels are almost never used by more than one hotspot.
+# Sometimes (when there are too many wifi networks) we have to choose
+# optimal (less occupied) wireless-channel:
+wireless-channel 6
 wireless-mode ad-hoc
 address ${subnetPart}1
 netmask 255.255.255.0
@@ -125,11 +121,12 @@ netmask 255.255.255.0
 # dns-nameservers
 EOF
 	cat > /etc/dhcp/wifi-switcher.conf <<EOF
-# This file is created and will be overwritten by the installation (postinst) script
+# This file belongs to the wifi-switcher package;
+# it is created and will be overwritten by the installation (postinst) script.
 # wifi-switcher configuration in the hotspot mode
-#ddns-update-style ad-hoc;
+# NO LONGER SUPPORTED: ddns-update-style ad-hoc;
 #option domain-name "domain.com";
-option domain-name-servers "$nameservers";
+option domain-name-servers $nameservers;
 default-lease-time 600;
 max-lease-time 7200;
 authorative;
@@ -140,32 +137,54 @@ option broadcast-address ${subnetPart}255;
 }
 EOF
 	cat > /etc/hostapd/wifi-switcher.conf <<EOF
-# This file is created and will be overwritten by the installation (postinst) script
+# This file belongs to the wifi-switcher package;
+# it is created and will be overwritten by the installation (postinst) script.
 # wifi-switcher configuration in the hotspot mode
 interface=$wifiInterface
 #driver=nl80211
 country_code=US
-ssid=hostname
+ssid=$essid
 hw_mode=g
+# It will not work without specifying the channel:
 channel=6
+#macaddr_acl sets options for mac address filtering. 0 means "accept unless in deny list"
+macaddr_acl=0
+#setting ignore_broadcast_ssid to 1 will disable the broadcasting of ssid
+ignore_broadcast_ssid=0
+#Sets authentication algorithm
+#1 - only open system authentication
+#2 - both open system authentication and shared key authentication
+auth_algs=1
+#####Sets WPA and WPA2 authentication#####
+#wpa option sets which wpa implementation to use
+#1 - wpa only
+#2 - wpa2 only
+#3 - both
 wpa=2
 wpa_passphrase=$wifiPassphrase
 wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
-auth_algs=1
-macaddr_acl=0
 EOF
 	cat > /etc/default/wifi-switcher <<EOF
+# This file belongs to the wifi-switcher package;
+# it is created and will be overwritten by the installation (postinst) script.
 # Do not edit this file manually, use
 # dpkg-reconfigure wifi-switcher
 wifi_interface="$wifiInterface"
+essid=$essid
 EOF
 	cat > /etc/default/isc-dhcp-server.wifi <<EOF
+# This file belongs to the wifi-switcher package;
+# it is created and will be overwritten by the installation (postinst) script.
 DHCPDv4_CONF=/etc/dhcp/wifi-switcher.conf
-#DHCPDv6_CONF=/etc/dhcp/dhcpd.conf
+INTERFACESv4=/etc/dhcp/wifi-switcher.conf
+# DHCPDv6_CONF=/etc/dhcp/dhcpd.conf
 DHCPD_CONF=/etc/dhcp/wifi-switcher.conf
-INTERFACES="$wifiInterface"
+# INTERFACES="$wifiInterface"
+INTERFACESv4="$wifiInterface"
+# Hotspot network name (no spaces allowed)
+essid=$essid
 EOF
 	chmod g=rx /etc/wpa_supplicant/ws-action.sh
 	chmod o=rx /etc/init.d/wifi-switcher
@@ -176,9 +195,10 @@ EOF
 	chmod 0440 /etc/sudoers.d/wifi-switcher
 	chmod 600 /etc/vsftpd-wifi.db /etc/vsftpd.conf.wifi /etc/hostapd/wifi-switcher.conf
 	chmod o=rx /usr/share/wifi-switcher/hotspot.sh
+	# chmod o+r /etc/network/interfaces.wifi
 
  	# echo "Expecting wifi-switcher to be the monopolist in using $i daemon, I disable its autostart and divert its configuration"
-	for i in $(service --status-all | grep "hostapd\|vsftpd\|x11-common" | awk '{print $NF}') ; do
+	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
 	    update-rc.d -f $i remove
 	done
     ;;
@@ -203,9 +223,11 @@ esac
 if [ "$1" = "configure" ] || [ "$1" = "abort-remove" ]; then
     dpkg-divert --package wifi-switcher --rename --divert /etc/default/isc-dhcp-server.orig --add /etc/default/isc-dhcp-server
     displace_link_symlink /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.wifi /etc/default/isc-dhcp-server.orig
-# now we comment any wifi-interface instances in /etc/network/interfaces
-    if grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1 ; then
-	perl -e '$data = `grep -v ^# /etc/network/interfaces`;
+    # now we comment any wifi-interface instances in /etc/network/interfaces
+    if [ ! -z $wifiInterface ]; then
+	if grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1 ; then
+	# error: the following block never finishes:
+	    perl -e '$data = `grep -v ^# /etc/network/interfaces`;
 @values = split("iface", $data); print $values[0]; shift @values;
 foreach my $val (@values) {
   if ($val =~ ("^[ \t]*" . "$ENV{wifiInterface}" . "[ \t]+")) {
@@ -215,8 +237,9 @@ foreach my $val (@values) {
   else {
     print "\niface$val"; }}
 print "\n";' > /etc/network/interfaces.wifi
-    dpkg-divert --package wifi-switcher --rename --divert /etc/network/interfaces.orig --add /etc/network/interfaces
-    displace_link_symlink /etc/network/interfaces /etc/network/interfaces.wifi /etc/network/interfaces.orig
+	    dpkg-divert --package wifi-switcher --rename --divert /etc/network/interfaces.orig --add /etc/network/interfaces
+	    displace_link_symlink /etc/network/interfaces /etc/network/interfaces.wifi /etc/network/interfaces.orig
+	fi
     fi
 fi
 

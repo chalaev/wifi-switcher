@@ -1,0 +1,11 @@
+# wifi-switcher configuration in the hotspot mode
+# (Part of the wifi-switcher package.)
+iface hostname inet static
+wireless-essid hostname
+# Sometimes (when there are too many wifi networks) you have to choose optimal (less occupied) wireless-channel:
+# wireless-channel 10
+wireless-mode ad-hoc
+address 192.168.1.1
+netmask 255.255.255.0
+# gateway 192.168.1.1
+# dns-nameservers

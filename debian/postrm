@@ -1,22 +1,29 @@
 #!/bin/sh -e
+. /usr/share/debconf/confmodule
+db_version 2.0
+db_get wifi-switcher/ftpVirtualUser
+ftpVirtualUser="$RET"
 
 case "$1" in
     purge)
 
-	for i in $(service --status-all | grep "hostapd\|vsftpd\|x11-common" | awk '{print $NF}') ; do
+	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
 	    echo "restoring default service for $i"
 	    update-rc.d -f $i defaults
 	done
 
 	for i in /etc/wpa_supplicant/wifi-switcher.conf /etc/vsftpd-wifi.db \
-/etc/sudoers.d/wifi-switcher /etc/network/interfaces.d/wifi-switcher \
+/etc/sudoers.d/wifi-switcher \
+/etc/network/interfaces.wifi /etc/network/interfaces.d/wifi-switcher \
 /etc/dhcp/wifi-switcher.conf /etc/hostapd/wifi-switcher.conf \
 /etc/default/isc-dhcp-server.wifi  /etc/default/wifi-switcher \
-/etc/wpa_supplicant/wifi-switcher.conf ; do
+/etc/wpa_supplicant/wifi-switcher.conf  ; do
 	    if [ -e $i ]; then
 		rm $i
 	    fi
 	done
+
+	[ -d /srv/ftp/$ftpVirtualUser ] && find /srv/ftp/$ftpVirtualUser -maxdepth 0 -type d -empty -exec rmdir {} \;
 
 	#  rm /var/log/wifi-switcher
 

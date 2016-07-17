@@ -1,0 +1,161 @@
+.TH "wifi-switcher" "1" 
+.SH "NAME"
+.PP
+wifi-switcher - Automatic switcher between wifi networks in IceWM and pdmenu.
+
+.SH "SYNOPSIS"
+.PP
+wifi-switcher action [OPTION] [MODIFIER]
+
+.SH "DESCRIPTION"
+.PP
+wifi-switcher is a command line utility that automatically switches between
+available wireless networks according to priorities set for every known SSID.
+
+.PP
+wifi-switcher is a wrapper for the wpa_\dsupplicant and udhcpc commands.
+
+.PP
+The program is designed to be controlled through iceWM menu or pdmenu;
+it is restricted to the users from the netdev group.
+
+.PP
+Newly discovered open and wpa2 SSIDs can easily be configured and added to the
+list of known networks.  (For more sophisticated enterprise networks one has to edit.br
+/etc/wpa_\dsupplicant/wifi-switcher.conf manually.)  Optionally the wifi
+interface can be switched into (ad-hoc) hotspot mode. In this mode, a new (ad-hoc) wifi network is created;
+in addition an ftp-server vsftpd is started so that smartphones and other similar devices can exchange files with your linux system.
+
+.SH "ACTIONS"
+.PP
+The following actions are available: scan, act, connect, and forget.
+
+.PP
+scan.br
+outputs dynamical menu for each detected wireless network.
+
+.PP
+act SSID.br
+provides submenu for (re)connecting or forgetting the specified SSID.
+
+.PP
+connect SSID.br
+connects to the wireless network with the given SSID. The specified SSID
+receives the highest priority, and will be used for connection whenever
+possible.
+
+.PP
+forget SSID.br
+forgets this SSID, so that its entry is removed from /etc/wpa\dsupplicant/wifi-switcher.conf.br
+Once the SSID is forgotten, the connection to this network will no longer be automatic.
+
+.SH "OPTIONS"
+.PP
+(mutually exclusive)
+
+.PP
+-icewm.br
+output dynamic meny in the IceWM format,
+
+.PP
+-pdmenu.br
+used with pdmenu.
+
+.SH "MODIFIERS"
+.PP
+--ascii.br
+avoids using unicode symbols to report the wifi signal strength,
+
+.PP
+--wifi-hotspot.br
+with this modifier, the program will generate an extra menu line for switching
+into/from the ad-hoc wifi server (hotspot) mode.
+
+.SH "USAGE"
+.PP
+Both in (graphical) icewm, and in (textual) pdmenu wifi-switcher generates dynamic menus:
+.SS "in icewm menu"
+.PP
+A typical line in the ~/.icewm/menu file:
+
+.PP
+menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
+
+.PP
+This menu line produces dynamic icewm-menu entries with available wifi networks.
+If the connection is established the corresponding network is shown on the
+second line with the /usr/share/wifi-switcher/connected.png icon.  Protected
+networks are marked with the /usr/share/wifi-switcher/locked.png icon.
+.SS "in pdmenu"
+.PP
+A typical entry in the ~/.pdmenu file (similar to the icewm menu entry described above):
+
+.PP
+group:wifi.br
+        exec::makemenu:$\ .br
+                echo "menu:mainWiFimenu:Choose network:Select the network" ; $\ .br
+                /usr/bin/wifi-switcher -pdmenu scan --wifi-hotspot.br
+        show:::mainWiFimenu.br
+        remove:::mainWiFimenu.br
+endgroup
+
+.SH "CONFIGURATION FILES"
+.PP
+See also /usr/share/doc/wifi-switcher/HOTSPOT
+.SS "/etc/wpa_\dsupplicant/wifi-switcher.conf"
+.PP
+This file stores priorities and authentification information in the format of a
+wpasupplicant configuration file. If only PSK-encrypted and unprotected wireless
+networks are available, this file does not need to be edited manually.
+
+.PP
+Its typical contents is shown below. The first two entries (PSK encryption and
+unprotected network) are added by the wifi-switcher; the third one uses more
+sophisticated enterprise encryption method and must be set up manually, except
+for priority which is adjusted by wifi-switcher.
+
+.PP
+ctrl_\dinterface=/var/run/wpa_\dsupplicant.br
+
+eapol_\dversion=1.br
+network={.br
+ssid="Hoselton_\dAuto_\dMall".br
+key_\dmgmt=WPA-PSK.br
+psk=630326a26f999af453239041eec68acdf93788eb7483176001b4fbf17d414a20.br
+priority=0.br
+}.br
+network={.br
+ssid="McDonalds Free WiFi".br
+key_\dmgmt=NONE.br
+priority=9.br
+}.br
+network={.br
+ssid="UR_\dConnected".br
+key_\dmgmt=WPA-EAP.br
+eap=PEAP.br
+identity="myLogin".br
+password="myVerySecretPassword".br
+phase2="MSCHAPv2".br
+priority=33.br
+}
+
+.SH "HOTSPOT MODE"
+.PP
+In this mode, a separate wifi-network is created and ftp server is activated.
+This is particularly useful for downloading/uploading files to/from smartphones and
+tablets. To see the corresponding settings (e.g., passwords) run
+/usr/share/wifi-switcher/hotspot.sh info
+with root priviledges. To change the settings, run dplg-reconfigure wifi-switcher.
+
+.SH "BUGS"
+.PP
+Email bug reports to Oleg Shalaev <chalaev@gmail.com>
+Please include output of the command
+/usr/share/wifi-switcher/hotspot.sh bugreport
+
+.SH "AUTHOR"
+.PP
+Written by Oleg Shalaev <chalaev@gmail.com>.
+.SH "SEE ALSO"
+.PP
+\fIhttps://github.com/chalaev/wifi-switcher\fP

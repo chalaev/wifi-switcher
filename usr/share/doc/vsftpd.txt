@@ -1,4 +1,4 @@
-Time-stamp: <2016-07-14 18:48 EDT by Oleg SHALAEV http://chalaev.com > 
+Time-stamp: <2016-07-15 20:55 EDT by Oleg SHALAEV http://chalaev.com > 
 Sometimes it takes time to configure vsftpd.
 Here is an example of two non-anonymous vsftpd configurations with write support.
 
@@ -58,6 +58,8 @@ lftp -u badboy,pass localhost
 where pass is the system password for the user badboy.
 
 * Virtual user setup
+(Has been tested on vsftpd version 3.0.3)
+
 Eventhough the user badboy is an unpriviledged one, my aesthetic feelings are hurt by the fact that an ftp user is connected with a system-wide one.
 Let us set up the user/password which will be known only to vsftpd.
 

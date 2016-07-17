@@ -10,7 +10,7 @@ Homepage: http://chalaev.com/wifi-switcher
 
 Package: wifi-switcher
 Architecture: all
-Depends: ${misc:Depends}, bash, sysvinit-utils, iproute2, wireless-tools, config-package-dev (>= 5.0), perl-tk, wpasupplicant, sudo, debconf (>= 0.2.17), po-debconf, sed (>= 4), awk, apg, db-util, isc-dhcp-server (>= 4.3.1), vsftpd, hostapd
+Depends: ${misc:Depends}, bash, sysvinit-utils, iproute2, wireless-tools, config-package-dev (>= 5.0), perl-tk, wpasupplicant, sudo, debconf (>= 0.2.17), po-debconf, sed (>= 4), awk, apg, db-util, isc-dhcp-server (>= 4.3.1), vsftpd, hostapd, udhcpc
 Recommends:  icewm | icewm-experimental | pdmenu, openssh-server
 Provides: ${diverted-files}
 Conflicts: network-manager, wicd, ${diverted-files}
