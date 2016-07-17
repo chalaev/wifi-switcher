@@ -1,0 +1,102 @@
+Time-stamp: <2016-07-14 18:48 EDT by Oleg SHALAEV http://chalaev.com > 
+Sometimes it takes time to configure vsftpd.
+Here is an example of two non-anonymous vsftpd configurations with write support.
+
+* This is an example of a vsftpd setup using system user.
+First let us install vsftpd and lftp which we use for testing:
+aptitude install vsftpd lftp
+
+We create a user designated solely for vsftpd:
+add-shell /sbin/nologin
+adduser --gecos "ftp user" --shell /sbin/nologin badboy
+usermod -s /sbin/nologin badboy
+echo badboy > /etc/vsftpd.user_list
+mkdir ~badboy/ftp
+chown ftp ~badboy/ftp
+chmod u+rwx ~badboy/ftp
+
+Next, we edit /etc/vsftpd.conf so that it looks as follows:
+allow_writeable_chroot=YES
+anonymous_enable=NO
+chroot_local_user=YES
+connect_from_port_20=YES
+data_connection_timeout=12000
+guest_enable=YES
+hide_ids=YES
+idle_session_timeout=12000
+listen=YES
+local_enable=YES
+local_root=/home/badboy/ftp
+ls_recurse_enable=YES
+pam_service_name=vsftpd
+secure_chroot_dir=/var/run/vsftpd/empty
+use_localtime=YES
+userlist_deny=NO
+userlist_enable=YES
+userlist_file=/etc/vsftpd.user_list
+virtual_use_local_privs=YES
+vsftpd_log_file=/var/log/vsftpd.log
+write_enable=YES
+xferlog_enable=YES
+xferlog_file=/var/log/vsftpd.log
+xferlog_std_format=YES
+pasv_enable=YES
+pasv_min_port=11000
+pasv_max_port=11010
+# end of /etc/vsftpd.conf
+
+Note that we specified auxiliary ports for ftp, and we have to enable access to them in our firewall settings.
+People who use shorewall can enable necessary ports by adding the following lines to /etc/shorewall/rules file:
+FTP(ACCEPT)	all     $FW
+ACCEPT		all	$FW	tcp	11000-11010
+
+Finally we restart vsftpd:
+service vsftpd restart
+
+Now we can test ftp access:
+lftp -u badboy,pass localhost
+where pass is the system password for the user badboy.
+
+* Virtual user setup
+Eventhough the user badboy is an unpriviledged one, my aesthetic feelings are hurt by the fact that an ftp user is connected with a system-wide one.
+Let us set up the user/password which will be known only to vsftpd.
+
+If you tested the previous setup, you have to remove the user badboy:
+deluser --remove-home badboy
+All files uploaded by the badboy ftp-user will be owned by the (existing) system-user shalaev (myself).
+
+In this case /etc/vsftpd.conf looks as follows:
+allow_writeable_chroot=YES
+local_enable=YES
+anonymous_enable=NO
+user_sub_token=$USER
+local_root=/srv/ftp/$USER
+write_enable=YES
+guest_enable=YES
+chroot_local_user=YES
+hide_ids=YES
+listen=YES
+dirmessage_enable=NO
+xferlog_enable=YES
+data_connection_timeout=12000
+idle_session_timeout=12000
+ls_recurse_enable=YES
+secure_chroot_dir=/var/run/vsftpd/empty
+pam_service_name=vsftpd.wifi
+pasv_enable=YES
+pasv_min_port=11000
+pasv_max_port=11010
+
+In order to check user/password, vsftpd will use /etc/pam.d/vsftpd.wifi file which must look as follows:
+auth required pam_userdb.so db=/etc/vsftpd-wifi
+account required pam_userdb.so db=/etc/vsftpd-wifi
+
+Just for illustration purposes, let badboy possess "goodgirl" password.
+To encode the password (create virtual users database) we need to install the package db-util:
+aptitude install db-util
+echo -e "badboy\ngoodgirl" | db_load -T -t hash /etc/vsftpd-wifi.db
+chmod 600 /etc/vsftpd-wifi.db
+mkdir -p /srv/ftp/badboy
+lftp -u badboy,goodgirl localhost -e ls
+
+Note that an attempt to log in via ftp with the system user name and password will fail.
