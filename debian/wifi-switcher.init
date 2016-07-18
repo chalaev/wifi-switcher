@@ -5,7 +5,7 @@
 # Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: wifi wanager
+# Short-Description: wifi switcher
 # Description:       Wrapper over wpa_supplicant and udhcpc which automatically connects to available wifi networks
 #                    which are configured either from the wifi-switcher script
 #                    or manually (for more sophisticated enterprise configurations).
@@ -23,12 +23,9 @@ wifi_interface="wlan0"
 supp_conf="/etc/wpa_supplicant/wifi-switcher.conf"
 [ -r /etc/default/wifi-switcher ] && . /etc/default/wifi-switcher
 
-DAEMON1=/sbin/wpa_supplicant
-[ -x "$DAEMON1" ] || exit 1
-DAEMON2=/sbin/wpa_cli
-[ -x "$DAEMON2" ] || exit 1
-DAEMON3=/sbin/udhcpc
-[ -x "$DAEMON3" ] || exit 1
+DAEMON1=/sbin/wpa_supplicant ; [ -x "$DAEMON1" ] || exit 1
+DAEMON2=/sbin/wpa_cli ; [ -x "$DAEMON2" ] || exit 1
+DAEMON3=/sbin/udhcpc ; [ -x "$DAEMON3" ] || exit 1
 
 PIDFILE1=/run/wpa_supplicant.pid
 PIDFILE2=/run/wpa_cli.pid
@@ -70,10 +67,8 @@ mod_sd () {
 }
 
 do_stop()
-{
-    # $1=$DAEMON, $2=$PIDFILE
+{    # $1=$DAEMON, $2=$PIDFILE
     # Return
-    #   0 if daemon has been stopped
     #   1 if daemon was already stopped
     #   2 if daemon could not be stopped
     #   other if a failure occurred
@@ -106,26 +101,40 @@ do_reload() {
     return 0
 }
 
+stop12() {
+    /sbin/wpa_cli terminate
+    count=0
+    while [ -r  $PIDFILE1 ] && [ $count -le 20 ] ; do sleep 1; count=`expr $count + 1`; done
+    if [ -r  $PIDFILE1 ]; then 
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC1" "$DAEMON1" ; do_stop $DAEMON1 $PIDFILE1 || true
+    fi
+    if [ -r  $PIDFILE2 ]; then 
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC2" "$DAEMON2" ; do_stop $DAEMON2 $PIDFILE2 || true
+    fi
+}
+
 case "$1" in
     start)
 	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC1" "$DAEMON1"
 	mod_sd -e $DAEMON1 -p $PIDFILE1 -- -P $PIDFILE1 \
 -i ${wifi_interface} -c ${supp_conf} -Dwext  -B -f /var/log/wifi-switcher.log
 	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC2" "$DAEMON2"
-	mod_sd -e $DAEMON2 -p $PIDFILE2 -- -P $PIDFILE2 \
--B -a /etc/wpa_supplicant/ws-action.sh
+	mod_sd -e $DAEMON2 -p $PIDFILE2 -- -P $PIDFILE2 -B -a /etc/wpa_supplicant/ws-action.sh
 	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC3" "$DAEMON3"
 	# may be I should try options "-t 6 -T 6 -A 5" after -- in the following line:
 	mod_sd -f -e $DAEMON3 -p $PIDFILE3 --  -p $PIDFILE3 -i ${wifi_interface}
 	;;
     stop)
-	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC1" "$DAEMON1" ; do_stop $DAEMON1 $PIDFILE1
-	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC2" "$DAEMON2" ; do_stop $DAEMON2 $PIDFILE2
-	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC3" "$DAEMON3" ; do_stop $DAEMON3 $PIDFILE3
+	stop12
+	if [ -r  $PIDFILE3 ]; then 
+	    [ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC3" "$DAEMON3" ; do_stop $DAEMON3 $PIDFILE3
+	fi
+	RETVAL=$?
 	case "$?" in
 	    0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
 	    2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
 	esac
+	return $RETVAL
 	;;
     status)
 	status_of_proc "$DAEMON1" "$DAEMON1" && \
@@ -133,10 +142,13 @@ case "$1" in
 	    status_of_proc "$DAEMON3" "$DAEMON3" && exit 0 || exit $?
 	;;
     restart|force-reload)
-	log_daemon_msg "Restarting $DESC1" "$DAEMON1" ; do_stop $DAEMON1 $PIDFILE1
+	log_daemon_msg "Restarting $DESC1" "$DAEMON1"
+	log_daemon_msg "Restarting $DESC2" "$DAEMON2"
+	stop12
 	case "$?" in
 	    0|1)
-		do_start $DAEMON1 "$DAEMON_ARGS1" $PIDFILE1
+		do_start $DAEMON1 "$DAEMON_ARGS1" $PIDFILE1 && \
+do_start $DAEMON2 "$DAEMON_ARGS2" $PIDFILE2
 		case "$?" in
 		    0) log_end_msg 0 ;;
 		    1) log_end_msg 1 ;; # Old process is still running
@@ -149,21 +161,6 @@ case "$1" in
 		;;
 	esac
 
-	log_daemon_msg "Restarting $DESC2" "$DAEMON2" ; do_stop $DAEMON2 $PIDFILE2
-	case "$?" in
-	    0|1)
-		do_start $DAEMON2 "$DAEMON_ARGS2" $PIDFILE2
-		case "$?" in
-		    0) log_end_msg 0 ;;
-		    1) log_end_msg 1 ;; # Old process is still running
-		    *) log_end_msg 1 ;; # Failed to start
-		esac
-		;;
-	    *)
-		# Failed to stop
-		log_end_msg 1
-		;;
-	esac
 	log_daemon_msg "Restarting $DESC3" "$DAEMON3" ; do_stop $DAEMON3 $PIDFILE3
 	case "$?" in
 	    0|1)

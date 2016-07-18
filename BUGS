@@ -1,7 +1,9 @@
 * wifi-switcher-related issues
-  Rarely, wifi-switcher detects no wifi networks, even though there are some
-  available. In this case restart the service (under root):
-  service wifi-switcher restart
+  1. After dpkg-reconfigure wifi-switcher
+     the file /etc/network/interfaces.wifi becomes empty.
+  2. Rarely, wifi-switcher detects no wifi networks, even though there are some
+     available. In this case restart the service (under root):
+     service wifi-switcher restart
 * wifi-switcher-unrelated issues
 1. When I soft-block wifi with Fn-F2 key combination on my Asus EEE, and then suspend the system with Fn-z (Fn-F1), wifi gets hard-blocked (see the output of
    `rfkill list`), and only reboot helps to restore it.

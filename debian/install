@@ -1,6 +1,7 @@
 etc/vsftpd.conf.wifi etc/
 etc/pam.d/vsftpd.wifi etc/pam.d/
 etc/wpa_supplicant/ws-action.sh etc/wpa_supplicant/
+etc/wpa_supplicant/wifi-switcher.conf etc/wpa_supplicant/
 usr/bin/wifi-switcher usr/bin/
 usr/share/wifi-switcher/hotspot.sh usr/share/wifi-switcher/
 usr/share/wifi-switcher/connected.png usr/share/wifi-switcher/

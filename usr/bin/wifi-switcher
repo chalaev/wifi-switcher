@@ -6,7 +6,7 @@ use List::MoreUtils qw(uniq);
 use Tk;			# requires package "perl-tk"
 use Tk::DialogBox;
 use Cwd 'abs_path';
-use Getopt::Long; # for GetOptions
+# use Getopt::Long; # for GetOptions
 require Tk::LabEntry;
 binmode STDOUT, ':utf8'; # disables annoying warning
 
@@ -16,9 +16,9 @@ binmode STDOUT, ':utf8'; # disables annoying warning
 
 $interface="wlan0"; # default
 open(wpaSuppFile, "</etc/default/wifi-switcher") || die "can not read /etc/default/wifi-switcher\n";
-    @lines = split("\n", <wpaSuppFile>);
-    foreach (@lines) {
-	if  ($_ =~ ('wifi_interface="(.*)"[ \t]*')) { $interface=$1; }}
+while (<wpaSuppFile>) {
+  if    ($_ =~ ('[ \t]*wifi_interface="(.*)"[ \t]*')) {$interface=$1;}
+  elsif ($_ =~ ('[ \t]*wifi_interface=(.*)[ \t]*'  )) {$interface=$1;}}
 close(wpaSuppFile);
 
 $theProg=abs_path(__FILE__)." ".(join " ",@opts,@modifiers);
@@ -78,8 +78,8 @@ foreach $profile (@profiles) {
 # sorting networks according to quality:
 @pris=uniq(sort {$b <=> $a} map { $$_{'quality'} } @pfs);
 foreach $pri (@pris) { push @spfs, grep { $$_{'quality'} == $pri} @pfs;} #sorting done
-
-if ( `/sbin/iwconfig $interface | grep "$interface[ \t]*"` =~ ("ESSID:\"(.*)\"")) {
+$gline="$interface" . '[ \t]';
+if ( `/sbin/iwconfig $interface | grep \"$gline\"` =~ ("ESSID:\"(.*)\"")) {
     $ssid=$1;    %connectedTo=%{(first { $$_{'ssid'} eq $ssid } @spfs)};
     @spfs = grep { $$_{'ssid'} ne $ssid} @spfs;
     $ssidPrinted=handleName($ssid);
@@ -124,7 +124,7 @@ sub handleName {
     if (memberQ("--ascii",\@modifiers)) { $dots="..."; }
     if (memberQ("-icewm",\@opts)) {
 	if (length($lc)>11) {$lc=join('',substr($lc, 0, 11-length($dots)),$dots);}
-	$lc =~ s/_/__/g;} # IceWM misunderstands first underscore symbol
+	$lc =~ s/_/__/;} # IceWM misunderstands first underscore symbol
     elsif (memberQ("-pdmenu",\@opts)) {
 	if (length($lc)>13) {$lc=join('',substr($lc, 0, 13-length($dots)),$dots);}
 	$lc =~ s/_/\\_/g;} # PdMenu misunderstands underscore symbols in another way

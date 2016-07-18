@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "Please run this script under root to read all wifi-switcher related files"
 for com in "ip addr ls" "ls -lth /etc/default/hostapd*" "ls -lth /etc/default/isc*" \
 "ls -lth /var/lib/dhcp/dhc*leases" "ls /{var/,}run/{udhcpc,wpa_*,hostapd,vsftp}.pid"  "ls -lthR /etc/wpa_supplicant*" \
 "ls -lthR /etc/vsftp*" "ls -lthR /etc/hostapd*" "ls -lthR /etc/dhcp*" "tail -n30 /var/log/wifi-switcher.log" ; do

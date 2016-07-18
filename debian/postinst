@@ -80,12 +80,8 @@ case "$1" in
 	subnetPart=$(echo $subnet |sed "s/\([0-9]\+\)\\.\([0-9]\+\)\\.\([0-9]\+\)\\..*/\1.\2.\3./")
 	echo "$ftpVirtualUser\n$ftpPassphrase" | db_load -T -t hash /etc/vsftpd-wifi.db
 	[ -d /srv/ftp/$ftpVirtualUser ] || mkdir -p /srv/ftp/$ftpVirtualUser
-	# chmod a+rx  /srv/ftp/$ftpVirtualUser
-
-	    # chmod 555 $ftpDir
-# 	[ -e $ftpDir/test.txt ] || \
-# echo "wifi-switcher: writing test file to $ftpDir" && \
-# echo "test ftp file" > $ftpDir/test.txt
+	# chmod a+rx /srv/ftp/$ftpVirtualUser
+	# chmod 555  /srv/ftp/$ftpVirtualUser
 
 	cat > /etc/sudoers.d/wifi-switcher <<EOF
 # This file belongs to the wifi-switcher package;
@@ -224,7 +220,7 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-remove" ]; then
     dpkg-divert --package wifi-switcher --rename --divert /etc/default/isc-dhcp-server.orig --add /etc/default/isc-dhcp-server
     displace_link_symlink /etc/default/isc-dhcp-server /etc/default/isc-dhcp-server.wifi /etc/default/isc-dhcp-server.orig
     # now we comment any wifi-interface instances in /etc/network/interfaces
-    if [ ! -z $wifiInterface ]; then
+    if [ ! -z $wifiInterface ] && [ ! -L /etc/network/interfaces ] ; then
 	if grep $wifiInterface /etc/network/interfaces > /dev/null 2>&1 ; then
 	# error: the following block never finishes:
 	    perl -e '$data = `grep -v ^# /etc/network/interfaces`;
