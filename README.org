@@ -3,8 +3,8 @@
 #+EMAIL:     chalaev@gmail.com
 
 wifi-switcher is a simple automatic switcher between wifi networks for laptops with
-icewm (window manager) or pdmenu (console menu program).
-To be used as a simple replacement of network manager or wicd
+[[http://www.icewm.org][icewm]] (window manager) or [[https://joeyh.name/code/pdmenu/][pdmenu]] (console menu program).
+To be used as a simple replacement of [[https://wiki.gnome.org/Projects/NetworkManager][network manager]] or [[https://launchpad.net/wicd][wicd]]
   (simplicity often means reliability).
 Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vsftpd server.
 (I use this feature mainly to move photos/videos/music from/to my wife's smartphone.)
