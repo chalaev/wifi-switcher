@@ -48,7 +48,7 @@ pasv_max_port=11010
 Note that we specified auxiliary ports for ftp, and we have to enable access to them in our firewall settings.
 People who use shorewall can enable necessary ports by adding the following lines to /etc/shorewall/rules file:
 FTP(ACCEPT)	all     $FW
-ACCEPT		all	$FW	tcp	11000-11010
+ACCEPT		all	$FW	tcp	11000:11010
 
 Finally we restart vsftpd:
 service vsftpd restart

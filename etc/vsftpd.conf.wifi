@@ -9,8 +9,14 @@ write_enable=YES
 local_enable=YES
 anonymous_enable=NO
 user_sub_token=$USER
+# setting directory for the ftp user name
 local_root=/srv/ftp/$USER
+# <-- so if /usr/share/wifi-switcher/get-passwords
+# reports me that "wifi-switcher has set ftp login to switcher"
+# this means that /srv/ftp/switcher must exist and be owned/accessible by/to the ftp user
 guest_enable=YES
+guest_username=ftp
+virtual_use_local_privs=YES
 chroot_local_user=YES
 hide_ids=YES
 listen=YES

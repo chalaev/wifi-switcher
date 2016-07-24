@@ -1,6 +1,6 @@
 * wifi-switcher-related issues
-  1. After dpkg-reconfigure wifi-switcher
-     the file /etc/network/interfaces.wifi becomes empty.
+  1. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
+     when the ssid has space(s).
   2. Rarely, wifi-switcher detects no wifi networks, even though there are some
      available. In this case restart the service (under root):
      service wifi-switcher restart
