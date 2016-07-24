@@ -9,9 +9,9 @@ To be used as a simple replacement of network manager or wicd
 Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vsftpd server.
 (I use this feature mainly to move photos/videos/music from/to my wife's smartphone.)
 
-See the description in .org files
+See more information in wifi-switcher*.org files.
 
-* Configuration example for icewm and pdmenu
+* Configuration examples for icewm and pdmenu
 A line in my ~/.icewm/menu file generating wifi menu is
 #+BEGIN_SRC pdmenu
 menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
