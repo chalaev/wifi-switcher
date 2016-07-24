@@ -17,6 +17,7 @@ menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 
 My ~/.pdmenu file looks as follows:
 
+#+BEGIN_SRC pdmenu
 #!/usr/bin/pdmenu
 # Define the main menu.
 menu:main:Main Menu
@@ -28,7 +29,6 @@ group:wifi (_unicode)
 	show:::mainWiFimenu
 	remove:::mainWiFimenu
 endgroup
-
 group:wifi (_ascii)
 	exec::makemenu:\
 		echo "menu:mainWiFimenuII:Choose network:Select the network" ; \
@@ -36,7 +36,6 @@ group:wifi (_ascii)
 	show:::mainWiFimenuII
 	remove:::mainWiFimenuII
 endgroup
-
 group:wifi (unicode + hotspot)
 	exec::makemenu:\
 		echo "menu:mainWiFimenu:Choose network:Select the network" ; \
@@ -44,7 +43,6 @@ group:wifi (unicode + hotspot)
 	show:::mainWiFimenu
 	remove:::mainWiFimenu
 endgroup
-
 group:wifi (ascii + hotspot)
 	exec::makemenu:\
 		echo "menu:mainWiFimenuII:Choose network:Select the network" ; \
@@ -62,3 +60,4 @@ exec:pause::vuxctl pause
 exec:next::vuxctl next
 exec:up stop::vuxctl up stop
 # exec:reload::vuxctl reload
+#+END_SRC
