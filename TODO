@@ -1,22 +1,21 @@
-1. ftp server must be stopped when we leave adhoc mode
-2. Will dpkg-reconfigure mess up with diversions? 
-3. Add a new setting into templates: wifiChannel, for now 6 is used in /etc/hostapd/wifi-switcher.conf
+1. Will dpkg-reconfigure mess up with diversions? 
+2. Add a new setting into templates: wifiChannel, for now 6 is used in /etc/hostapd/wifi-switcher.conf
    and in /etc/network/interfaces.d/wifi-switcher
-4. Add dnsmasq (for simple dns sharing) as an alternative for isc-dhcp-server.
-5. Test /usr/share/wifi-switcher/hotspot.sh in case there are no networks.
-6. In /usr/share/wifi-switcher/hotspot.sh use "while getopts" loop to pass options
+3. Add dnsmasq (for simple dns sharing) as an alternative for isc-dhcp-server.
+4. Test /usr/share/wifi-switcher/hotspot.sh in case there are no networks.
+5. In /usr/share/wifi-switcher/hotspot.sh use "while getopts" loop to pass options
    a. wifi interface
    b. name of the adhoc network
-7. Improve package description in debian/control: This is a perl wrapper for
+6. Improve package description in debian/control: This is a perl wrapper for
    wpa_supplicant, wpa_cli, and udhcpc.  Switches between wifi networks configured in
    the wpasupplicant configuration file.
-8. Move vsftpd, hostapd, and isc-dhcp-server from "Depends" to "Recommends"
+7. Move vsftpd, hostapd, and isc-dhcp-server from "Depends" to "Recommends"
    section of the debian/control file and set up trigger so that wifi-switcher
    is reconfigured every time they are installed/removed.
-9. use osd notifications like "(dis)connected from/to wifi network"
+8. use osd notifications like "(dis)connected from/to wifi network"
    -- use dunst or another notification daemon to notify user of connections.
-10. create emacs interface for wifi-switcher
-11. Submenu for unavailable interfaces to conveniently froget them.
-12. Focus on using systemd? I do not want to loose compatibility with sysvinit...
-13. test the package in a situation when no wifi networks are available
+9. create emacs interface for wifi-switcher
+10. Submenu for unavailable interfaces to conveniently froget them.
+11. Focus on using systemd? I do not want to loose compatibility with sysvinit...
+12. test the package in a situation when no wifi networks are available
 
