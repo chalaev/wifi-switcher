@@ -1,3 +1,7 @@
+#+TITLE:     wifi-switcher
+#+AUTHOR:    Oleg Shalaev
+#+EMAIL:     chalaev@gmail.com
+
 wifi-switcher is a simple automatic switcher between wifi networks for laptops with
 icewm (window manager) or pdmenu (console menu program).
 To be used as a simple replacement of network manager or wicd
@@ -12,20 +16,11 @@ A line in my ~/.icewm/menu file generating wifi menu is
 menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 
 My ~/.pdmenu file looks as follows:
-===================
+
 #!/usr/bin/pdmenu
-
-# Set a pleasing color scheme.
-color:desktop:white:blue
-color:title:yellow:red
-color:base:yellow:red
-
 # Define the main menu.
 menu:main:Main Menu
-# menu:main:Main Menu:Some text
-
 show:navit...::navit_conf
-
 group:wifi (_unicode)
 	exec::makemenu:\
 		echo "menu:mainWiFimenu:Choose network:Select the network" ; \
@@ -41,7 +36,6 @@ group:wifi (_ascii)
 	show:::mainWiFimenuII
 	remove:::mainWiFimenuII
 endgroup
-
 
 group:wifi (unicode + hotspot)
 	exec::makemenu:\
