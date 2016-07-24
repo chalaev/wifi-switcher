@@ -11,9 +11,11 @@ Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vs
 
 See the description in .org files
 
-* Configuring icewm and pdmenu
+* Configuration example for icewm and pdmenu
 A line in my ~/.icewm/menu file generating wifi menu is
+#+BEGIN_SRC pdmenu
 menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
+#+END_SRC
 
 My ~/.pdmenu file looks as follows:
 
