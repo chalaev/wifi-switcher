@@ -7,8 +7,7 @@ Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vs
 
 See the description in .org files
 
-Configuring icewm and pdmenu
-===================
+* Configuring icewm and pdmenu
 A line in my ~/.icewm/menu file generating wifi menu is
 menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 
@@ -30,7 +29,7 @@ show:navit...::navit_conf
 group:wifi (_unicode)
 	exec::makemenu:\
 		echo "menu:mainWiFimenu:Choose network:Select the network" ; \
-		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu scan
+		/usr/bin/wifi-switcher -pdmenu scan
 	show:::mainWiFimenu
 	remove:::mainWiFimenu
 endgroup
@@ -38,7 +37,7 @@ endgroup
 group:wifi (_ascii)
 	exec::makemenu:\
 		echo "menu:mainWiFimenuII:Choose network:Select the network" ; \
-		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu scan --ascii
+		/usr/bin/wifi-switcher -pdmenu scan --ascii
 	show:::mainWiFimenuII
 	remove:::mainWiFimenuII
 endgroup
@@ -47,7 +46,7 @@ endgroup
 group:wifi (unicode + hotspot)
 	exec::makemenu:\
 		echo "menu:mainWiFimenu:Choose network:Select the network" ; \
-		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu --wifi-hotspot scan
+		/usr/bin/wifi-switcher -pdmenu --wifi-hotspot scan
 	show:::mainWiFimenu
 	remove:::mainWiFimenu
 endgroup
@@ -55,7 +54,7 @@ endgroup
 group:wifi (ascii + hotspot)
 	exec::makemenu:\
 		echo "menu:mainWiFimenuII:Choose network:Select the network" ; \
-		/home/shalaev/PROGRAMMISMO/projects/wifi-switcher-1.0/usr/bin/wifi-switcher -pdmenu scan --ascii --wifi-hotspot
+		/usr/bin/wifi-switcher -pdmenu scan --ascii --wifi-hotspot
 	show:::mainWiFimenuII
 	remove:::mainWiFimenuII
 endgroup
