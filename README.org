@@ -1,15 +1,28 @@
 #+TITLE:     wifi-switcher
 #+AUTHOR:    Oleg Shalaev
 #+EMAIL:     chalaev@gmail.com
+#+OPTIONS: ^:nil
 
 wifi-switcher is a simple automatic switcher between wifi networks for laptops with
 [[http://www.icewm.org][icewm]] (window manager) or [[https://joeyh.name/code/pdmenu/][pdmenu]] (console menu program).
-To be used as a simple replacement of [[https://wiki.gnome.org/Projects/NetworkManager][network manager]] or [[https://launchpad.net/wicd][wicd]]
-  (simplicity often means reliability).
+To be used as a simple replacement of [[https://wiki.gnome.org/Projects/NetworkManager][network manager]] or [[https://launchpad.net/wicd][wicd]] (simplicity often means reliability).
 Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vsftpd server.
 (I use this feature mainly to move photos/videos/music from/to my wife's smartphone.)
 
 See more information in wifi-switcher*.org files.
+
+* Quick start
+Download (or create yourself using ~pack.sh~) and install [[http://chalaev.com/pub/wifi-switcher_1.0-1_all.deb][wifi-switcher_1.0-1_all.deb]]:
+#+BEGIN_SRC sh
+dpkg -i wifi-switcher_1.0-1_all.deb
+#+END_SRC
+Use configuration examples described below.
+Add networks automatically (see screenshots) or manually (edit /etc/wpa_supplicant/wifi-switcher.conf)
+Run /usr/share/wifi-switcher/get-passwords to display (randomly-generated) passwords needed to connect to the adhoc wifi spot.
+To change the adhoc-passwords or the wifi-interface name, run
+#+BEGIN_SRC sh
+dpkg-reconfigure wifi-switcher
+#+END_SRC
 
 * Configuration examples for icewm and pdmenu
 A line in my ~/.icewm/menu file generating wifi menu is
