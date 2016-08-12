@@ -13,6 +13,7 @@ It is important to allow ssh and ftp connections in the firewall setup (I use sh
 Below I copied some configuration files for vsftpd and shorewall.
 
 ** /etc/vsftpd.conf:
+#+BEGIN_SRC
 allow_writeable_chroot=YES
 # if you allow file upload (write_enable), consider limiting the size of the ftp directory by
 # placing it either on a separate partition, or inside the (mounted with "loop" option) file.
@@ -40,21 +41,27 @@ xferlog_file=/var/log/vsftpd.log
 xferlog_std_format=YES
 pasv_min_port=11000
 pasv_max_port=11010
+#+END_SRC
 
 ** /etc/pam.d/vsftpd
+#+BEGIN_SRC
 # the following lines refer to the file /etc/vsftpd.db
 # which is created by the command
 # echo -e "ftpUserName\nftpPassword" | db_load -T -t hash /etc/vsftpd.db
 # (note that ftpUserName is not listed in the /etc/passwd file)
 auth required pam_userdb.so db=/etc/vsftpd
 account required pam_userdb.so db=/etc/vsftpd
+#+END_SRC
 
 ** /etc/shorewall/interfaces:
+#+BEGIN_SRC
 net	eth0	detect	dhcp,tcpflags,nosmurfs,routefilter,logmartians
 wifi	wlan0	detect	tcpflags,nosmurfs,routefilter,logmartians
 #LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE
+#+END_SRC
 
 ** /etc/shorewall/rules:
+#+BEGIN_SRC
 # we accept connections on main ftp (21) port:
 FTP(ACCEPT)	wifi		$FW
 # we should also accept connections for ftp data ports configured in /etc/vsftpd.conf:
@@ -66,3 +73,4 @@ Ping/DROP	net		$FW
 ACCEPT		$FW		wifi	icmp
 ACCEPT		$FW		net	icmp
 #LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE
+#+END_SRC
