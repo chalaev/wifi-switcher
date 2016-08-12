@@ -65,7 +65,7 @@ wifi	wlan0	detect	tcpflags,nosmurfs,routefilter,logmartians
 # we accept connections on main ftp (21) port:
 FTP(ACCEPT)	wifi		$FW
 # we should also accept connections for ftp data ports configured in /etc/vsftpd.conf:
-ACCEPT		all		$FW	tcp	5510-5520
+ACCEPT		wifi		$FW	tcp	11000:11010
 SSH/ACCEPT	all		$FW
 DNS/ACCEPT	wifi		$FW
 Ping/ACCEPT	$FW		all
