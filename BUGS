@@ -1,7 +1,9 @@
 * wifi-switcher-related issues
-  1. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
+  1. Somehow vsftpd and hostapd are not killed after the end of the ad-hoc wifi session. It is also possible that they are auto-launched at startup. Because of
+     that, wifi-switcher thinks that it is always in the "server mode".
+  2. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
      when the ssid has space(s).
-  2. Rarely, wifi-switcher detects no wifi networks, even though there are some
+  3. Rarely, wifi-switcher detects no wifi networks, even though there are some
      available. In this case restart the service (under root):
      service wifi-switcher restart
 * wifi-switcher-unrelated issues

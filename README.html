@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>wifi-switcher</title>
-<!-- 2016-08-05 Пт 17:39 -->
+<!-- 2016-08-27 Сб 06:02 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Oleg Shalaev" />
@@ -167,20 +167,27 @@ Download (or create yourself using <code>pack.sh</code>) and install <a href="ht
 </p>
 <div class="org-src-container">
 
-<pre class="src src-sh">dpkg -i wifi-switcher_1.0-1_all.deb
+<pre class="src src-sh">wget http://chalaev.com/pub/wifi-switcher_1.0-1_all.deb
+dpkg -i wifi-switcher_1.0-1_all.deb
 </pre>
 </div>
 <p>
-Use configuration examples described below.
-Add networks automatically (see screenshots) or manually (edit /etc/wpa_supplicant/wifi-switcher.conf)
-Run /usr/share/wifi-switcher/get-passwords to display (randomly-generated) passwords needed to connect to the adhoc wifi spot.
-To change the adhoc-passwords or the wifi-interface name, run
+Use configuration examples described below.<br  />
+Add networks automatically (see screenshots) or manually (edit <code>/etc/wpa_supplicant/wifi-switcher.conf</code>).
+Run <code>/usr/share/wifi-switcher/get-passwords</code> to display (randomly-generated) passwords needed to connect to the adhoc wifi spot.
+To change ftp and adhoc passwords or the wifi-interface name, run
 </p>
 <div class="org-src-container">
 
 <pre class="src src-sh">dpkg-reconfigure wifi-switcher
 </pre>
 </div>
+<p>
+From time to time packages <code>hostapd</code> and <code>vsftpd</code> used by <code>wifi-switcher</code> are updated;
+during the update these services are set to be launched at system start and always be active.
+Use <code>dpkg-reconfigure wifi-switcher</code> to de-activate them;
+<code>wifi-switcher</code> assumes that <code>hostapd</code> is running only during its "adhoc" mode and will be messed up otherwise.
+</p>
 </div>
 </div>
 
@@ -188,18 +195,20 @@ To change the adhoc-passwords or the wifi-interface name, run
 <h2 id="sec-2"><span class="section-number-2">2</span> Configuration examples for icewm and pdmenu</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-A line in my ~/.icewm/menu file generating wifi menu is
+A line in my <code>~/.icewm/menu</code> file generating wifi menu is
 </p>
 <div class="org-src-container">
 
 <pre class="src src-pdmenu">menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 </pre>
 </div>
+<p>
+My real-life IceWM configuration is <a href="http://chalaev.com/pub/skel/.icewm/">available here</a>.
+</p>
 
 <p>
 My <code>~/.pdmenu</code> file looks as follows:
 </p>
-
 <div class="org-src-container">
 
 <pre class="src src-pdmenu">#!/usr/bin/pdmenu
@@ -251,7 +260,7 @@ exec:up stop::vuxctl up stop
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Oleg Shalaev</p>
-<p class="date">Created: 2016-08-05 Пт 17:39</p>
+<p class="date">Created: 2016-08-27 Сб 06:02</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
