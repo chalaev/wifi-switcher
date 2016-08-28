@@ -1,12 +1,13 @@
-.TH "wifi-switcher-ru" "1" 
+.TH "" "1" 
 .SH "Название"
 .PP
 wifi-switcher - автоматический переключатель беспроводных сетей для IceWM и pdmenu.
 
 .SH "Команда"
 .PP
-wifi-switcher действие [параметры] [модификаторы].br
-  действие не начинается с черты, один или несколько параметров начинаются с одной черты, а
+wifi-switcher действие [параметры] [модификаторы]
+.br
+действие не начинается с черты, один или несколько параметров начинаются с одной черты, а
 один или несколько модификаторов начинаются с двух черт.
 
 .SH "Описание"
@@ -39,23 +40,28 @@ ftp-сервер vsftpd, который может использоваться,
 Возможно задание одного из следующих действий: scan, act, connect, и forget.
 
 .PP
-scan.br
+scan
+.br
 выводит динамическое меню для каждой из обнаруженных беспроводных сетей.
 
 .PP
-act SSID.br
+act SSID
+.br
 выводит подменю для (первичного или повторного) соединения с выбранной
 беспроводной сетью с идентификатором SSID.
 
 .PP
-connect SSID.br
+connect SSID
+.br
 соединяется (или пересоединяется) с данной сетью, которая получает наивысший
 приоритет; в дальнейшем система по возможности будет пытаться установить
 соединение в первую очередь с этой сетью.
 
 .PP
-forget SSID.br
-забывает данную сеть, так что информация о ней стирается из файла /etc/wpa\dsupplicant/wifi-switcher.conf.br
+forget SSID
+.br
+забывает данную сеть, так что информация о ней стирается из файла /etc/wpa\dsupplicant/wifi-switcher.conf
+.br
 Забытая сеть становится неизвестной; компьютер не будет подключаться к такой сети автоматически.
 
 .SH "Параметры"
@@ -63,20 +69,24 @@ forget SSID.br
 (взаимоисключающие)
 
 .PP
--icewm.br
+-icewm
+.br
 для вывода динамического меню в формате IceWM,
 
 .PP
--pdmenu.br
+-pdmenu
+.br
 для вывода динамического меню в формате pdmenu.
 
 .SH "Модификаторы"
 .PP
---ascii.br
+--ascii
+.br
 использовать только ascii-символы для отображения амплитуды радиосигнала сети,
 
 .PP
---wifi-hotspot.br
+--wifi-hotspot
+.br
 с этим модификатором программа сгенерирует дополнительную строку динамического
 меню для перехода в режим wifi-сервера или выхода из него,
 
@@ -101,12 +111,18 @@ menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
 которых эквивалентно вышеописанной строке для icewm:
 
 .PP
-group:wifi.br
-        exec::makemenu:$\ .br
-                echo "menu:mainWiFimenu:Choose network:Select the network" ; $\ .br
-                /usr/bin/wifi-switcher -pdmenu scan --wifi-hotspot.br
-        show:::mainWiFimenu.br
-        remove:::mainWiFimenu.br
+group:wifi
+.br
+        exec::makemenu:\\ 
+.br
+                echo "menu:mainWiFimenu:Choose network:Select the network" ; \\ 
+.br
+                /usr/bin/wifi-switcher -pdmenu scan --wifi-hotspot
+.br
+        show:::mainWiFimenu
+.br
+        remove:::mainWiFimenu
+.br
 endgroup
 
 .SH "Файлы конфигурации"
@@ -126,28 +142,48 @@ endgroup
 программой wifi-switcher автоматически.
 
 .PP
-ctrl_\dinterface=/var/run/wpa_\dsupplicant.br
-
-eapol_\dversion=1.br
-network={.br
-ssid="Hoselton_\dAuto_\dMall".br
-key_\dmgmt=WPA-PSK.br
-psk=630326a26f999af453239041eec68acdf93788eb7483176001b4fbf17d414a20.br
-priority=0.br
-}.br
-network={.br
-ssid="McDonalds Free WiFi".br
-key_\dmgmt=NONE.br
-priority=9.br
-}.br
-network={.br
-ssid="UR_\dConnected".br
-key_\dmgmt=WPA-EAP.br
-eap=PEAP.br
-identity="myLogin".br
-password="myVerySecretPassword".br
-phase2="MSCHAPv2".br
-priority=33.br
+ctrl_\dinterface=/var/run/wpa_\dsupplicant
+.br
+eapol_\dversion=1
+.br
+network={
+.br
+ssid="Hoselton_\dAuto_\dMall"
+.br
+key_\dmgmt=WPA-PSK
+.br
+psk=630326a26f999af453239041eec68acdf93788eb7483176001b4fbf17d414a20
+.br
+priority=0
+.br
+}
+.br
+network={
+.br
+ssid="McDonalds Free WiFi"
+.br
+key_\dmgmt=NONE
+.br
+priority=9
+.br
+}
+.br
+network={
+.br
+ssid="UR_\dConnected"
+.br
+key_\dmgmt=WPA-EAP
+.br
+eap=PEAP
+.br
+identity="myLogin"
+.br
+password="myVerySecretPassword"
+.br
+phase2="MSCHAPv2"
+.br
+priority=33
+.br
 }
 
 .SH "Режим hotspot"

@@ -56,25 +56,26 @@ into/from the ad-hoc wifi server (hotspot) mode.
 
 * USAGE
 Both in (graphical) icewm, and in (textual) pdmenu wifi-switcher generates dynamic menus:
-** in icewm menu
+** in icewm menu:
 A typical line in the ~/.icewm/menu file:
-
+#+BEGIN_SRC conf
 menuprogreload wifi - 0 /usr/bin/wifi-switcher -icewm scan --wifi-hotspot
-
+#+END_SRC
 This menu line produces dynamic icewm-menu entries with available wifi networks.
 If the connection is established the corresponding network is shown on the
 second line with the /usr/share/wifi-switcher/connected.png icon.  Protected
 networks are marked with the /usr/share/wifi-switcher/locked.png icon.
-** in pdmenu
-A typical entry in the ~/.pdmenu file (similar to the icewm menu entry described above):
-
-group:wifi\\
-	exec::makemenu:\ \\
-		echo "menu:mainWiFimenu:Choose network:Select the network" ; \ \\
-		/usr/bin/wifi-switcher -pdmenu scan --wifi-hotspot\\
-	show:::mainWiFimenu\\
-	remove:::mainWiFimenu\\
+** in pdmenu:
+A typical entry in the ~/.pdmenurc file (which does the same as the icewm menu entry described above):
+#+BEGIN_SRC conf
+group:wifi
+	exec::makemenu:\\
+		echo "menu:mainWiFimenu:Choose network:Select the network" ; \\
+		/usr/bin/wifi-switcher -pdmenu scan --ascii --wifi-hotspot
+	show:::mainWiFimenu
+	remove:::mainWiFimenu
 endgroup
+#+END_SRC
 
 * CONFIGURATION FILES
 See also /usr/share/doc/wifi-switcher/HOTSPOT
@@ -87,7 +88,7 @@ Its typical contents is shown below. The first two entries (PSK encryption and
 unprotected network) are added by the wifi-switcher; the third one uses more
 sophisticated enterprise encryption method and must be set up manually, except
 for priority which is adjusted by wifi-switcher.
-
+#+BEGIN_SRC conf
 ctrl__interface=/var/run/wpa__supplicant\\
 eapol__version=1\\
 network={\\
@@ -110,22 +111,30 @@ password="myVerySecretPassword"\\
 phase2="MSCHAPv2"\\
 priority=33\\
 }
+#+END_SRC
 
 * HOTSPOT MODE
 In this mode, a separate wifi-network is created and ftp server is activated.
 This is particularly useful for downloading/uploading files to/from smartphones and
 tablets. To see the corresponding settings (e.g., passwords) run
+#+BEGIN_SRC sh
 /usr/share/wifi-switcher/hotspot.sh info
-with root priviledges. To change the settings, run dplg-reconfigure wifi-switcher.
+#+END_SRC
+with root priviledges. To change the settings, run
+#+BEGIN_SRC sh
+dplg-reconfigure wifi-switcher.
+#+END_SRC
 
 * BUGS
-  Email bug reports to Oleg Shalaev <chalaev@gmail.com>
-  Please include output of the command
-  /usr/share/wifi-switcher/hotspot.sh bugreport
+Email bug reports to Oleg Shalaev <chalaev@gmail.com>\\
+Please include output of the command
+#+BEGIN_SRC sh
+/usr/share/wifi-switcher/hotspot.sh bugreport
+#+END_SRC
 
 * AUTHOR
-  Written by Oleg Shalaev <chalaev@gmail.com>.
+Written by Oleg Shalaev http://chalaev.com
 * SEE ALSO
   https://github.com/chalaev/wifi-switcher
-
+  http://chalaev.com/projects
 
