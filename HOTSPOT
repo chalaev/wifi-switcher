@@ -1,0 +1,84 @@
+DESCRIPTION:
+
+To transfer files between two linux computers, we use ssh or ftp server
+installed on one of them.
+
+
+MOTIVATION:
+
+I connect android and windows mobile devices to my linux netbook using
+ftp capability of (free) "total commander" file manager.
+
+
+SETUP
+
+It is assumed that wifi-switcher is a monopolistic user of hostapd,
+vsftpd and isc-dhcp-server; their auto-start is disabled and their
+configuration files are diverted.
+
+It is important to allow ssh and ftp connections in the firewall setup
+(I use shorewall). Below I copied some configuration files for vsftpd
+and shorewall.
+
+
+/etc/vsftpd.conf:
+
+    allow_writeable_chroot=YES
+    # if you allow file upload (write_enable), consider limiting the size of the ftp directory by
+    # placing it either on a separate partition, or inside the (mounted with "loop" option) file.
+    # [Attempt to enforce quota for the actual ftp directory owner (see guest_username) may result in server hang up.]
+    write_enable=YES
+    chroot_local_user=YES
+    anonymous_enable=NO
+    data_connection_timeout=12000
+    idle_session_timeout=12000
+    # enabling local ftp users defined in /etc/vsftpd.db (see below):
+    guest_enable=YES
+    local_enable=NO
+    # this is the system user which will own the files in the ftp directory
+    guest_username=ftp
+    # the way how local (non-system) users will be authenticated
+    pam_service_name=vsftpd
+    listen=YES
+    hide_ids=YES
+    secure_chroot_dir=/var/run/vsftpd/empty
+    use_localtime=YES
+    virtual_use_local_privs=YES
+    vsftpd_log_file=/var/log/vsftpd.log
+    xferlog_enable=YES
+    xferlog_file=/var/log/vsftpd.log
+    xferlog_std_format=YES
+    pasv_min_port=11000
+    pasv_max_port=11010
+
+
+/etc/pam.d/vsftpd
+
+    # the following lines refer to the file /etc/vsftpd.db
+    # which is created by the command
+    # echo -e "ftpUserName\nftpPassword" | db_load -T -t hash /etc/vsftpd.db
+    # (note that ftpUserName is not listed in the /etc/passwd file)
+    auth required pam_userdb.so db=/etc/vsftpd
+    account required pam_userdb.so db=/etc/vsftpd
+
+
+/etc/shorewall/interfaces:
+
+    net eth0    detect  dhcp,tcpflags,nosmurfs,routefilter,logmartians
+    wifi    wlan0   detect  tcpflags,nosmurfs,routefilter,logmartians
+    #LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE
+
+
+/etc/shorewall/rules:
+
+    # we accept connections on main ftp (21) port:
+    FTP(ACCEPT) wifi        $FW
+    # we should also accept connections for ftp data ports configured in /etc/vsftpd.conf:
+    ACCEPT      wifi        $FW tcp 11000:11010
+    SSH/ACCEPT  all     $FW
+    DNS/ACCEPT  wifi        $FW
+    Ping/ACCEPT $FW     all
+    Ping/DROP   net     $FW
+    ACCEPT      $FW     wifi    icmp
+    ACCEPT      $FW     net icmp
+    #LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE
