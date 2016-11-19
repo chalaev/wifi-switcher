@@ -1,0 +1,35 @@
+Format: 1.8
+Date: Wed, 07 Oct 2015 22:03:16 -0400
+Source: wifi-switcher
+Binary: wifi-switcher
+Architecture: source all
+Version: 1.0-1
+Distribution: unstable
+Urgency: low
+Maintainer: Oleg Shalaev <chalaev@gmail.com>
+Changed-By: Oleg Shalaev <chalaev@gmail.com>
+Description:
+ wifi-switcher - wifi-manager for icewm and pdmenu
+Closes: 805116
+Changes:
+ wifi-switcher (1.0-1) unstable; urgency=low
+ .
+   * Initial release (Closes: #805116).
+Checksums-Sha1:
+ fb218f2b5f4434d55d92cf04adfad1e8a99afbd6 1380 wifi-switcher_1.0-1.dsc
+ c708728c1ea328c41fb6526ebcd8f6b3cedcfd3a 825720 wifi-switcher_1.0.orig.tar.xz
+ f92c7988f1711183b732666e3cd3e4393d1ced9d 9168 wifi-switcher_1.0-1.debian.tar.xz
+ a0244df45526e5af9d327dd2c278179dcf6d1d6a 4558 wifi-switcher_1.0-1_20161119T012106z-cda1c51e.buildinfo
+ 2f896ddf1650fa3b18951d0353f249e1a53144cb 27742 wifi-switcher_1.0-1_all.deb
+Checksums-Sha256:
+ c6bc15a5566e2a42e87c5525fb159ed25916f987ab003e6e6642a759688f4759 1380 wifi-switcher_1.0-1.dsc
+ 867e53b0ef5d30868978b03461afa04b838fa01fa273be1dd36873da8147843e 825720 wifi-switcher_1.0.orig.tar.xz
+ bb308b6040545935123fba006476aafbcaf5ede4a0fe94f8ea2248538478aa3c 9168 wifi-switcher_1.0-1.debian.tar.xz
+ 17c99484c71fb4f75ed6a540b5b65114782acf256361e8953c58abae2e0752e2 4558 wifi-switcher_1.0-1_20161119T012106z-cda1c51e.buildinfo
+ 30f512406d17d12959ea61d38f43a432e24a0c5fd5948c159a969db0177a6553 27742 wifi-switcher_1.0-1_all.deb
+Files:
+ ebb0a8ed4342151658d72f6ef02a0686 1380 net optional wifi-switcher_1.0-1.dsc
+ 1a1354fc934c6c7e8498395eb6594936 825720 net optional wifi-switcher_1.0.orig.tar.xz
+ d6a3e637785946f5801879b73ba51cc7 9168 net optional wifi-switcher_1.0-1.debian.tar.xz
+ cda1c51edea95fa46a0ede24c2713d9d 4558 net optional wifi-switcher_1.0-1_20161119T012106z-cda1c51e.buildinfo
+ a466565bca847bed7e50ef04a21e0a6a 27742 net optional wifi-switcher_1.0-1_all.deb

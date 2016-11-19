@@ -46,7 +46,8 @@ dh_make -p ${projectName}_${version} -c gpl -e chalaev@gmail.com --indep --yes -
 echo $version > current_version.txt
 
 # следующая строчка не работает, конфликт версий (если версия не равна 1.0)
-dpkg-buildpackage -rfakeroot -us -uc -v$version
+# dpkg-buildpackage -rfakeroot -us -uc -v$version
+dpkg-buildpackage -rfakeroot -uc -v$version
 # See the package local-apt-repository:
 if [ -d /srv/local-apt-repository/ ]; then
     mv  ../${projectName}*.deb /srv/local-apt-repository/
