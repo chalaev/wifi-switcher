@@ -14,9 +14,9 @@ Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vs
 See more information in ~wifi-switcher*.org~ files.
 
 * Quick start
-Download (or create yourself using ~pack.sh~) and install [[http://chalaev.com/pub/wifi-switcher_1.0-1_all.deb][wifi-switcher_1.0-1_all.deb]]:
+Download (or create yourself using ~pack.sh~) and install [[http://chalaev.com/pub/ws/wifi-switcher_last_all.deb][wifi-switcher_last_all.deb]]
 #+BEGIN_SRC sh
-wget http://chalaev.com/pub/wifi-switcher_1.0-1_all.deb
+wget http://chalaev.com/pub/ws/wifi-switcher_1.0-1_all.deb
 dpkg -i wifi-switcher_1.0-1_all.deb
 #+END_SRC
 (In Debian stretch instead of ~dpkg -i wifi-switcher_1.0-1_all.deb~

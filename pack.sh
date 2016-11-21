@@ -1,5 +1,10 @@
 #!/bin/bash
 # requires packages: debhelper dh-make fakeroot build-essential config-package-dev
+
+# dpkg-source --commit
+# debsign wifi-switcher_1.0-1_amd64.changes
+# dupload -to mentors .
+
 if [ -e debian/control ]; then
     projectName=$(awk "\$1==\"Package:\" {print \$2}"  debian/control)
 fi
@@ -15,14 +20,17 @@ fi
 find debian/ -type f \( -name "pre*" -o -name "post*" \) -exec sed -i "s/[ \t]\+$//" {} \;
 
 # generate man-files from emacs org-mode ones (note that the original ox-man.el is buggy):
-if `ls /usr/share/emacs/*/lisp/org/ox-man.elc > /dev/null 2>&1` ; then
-    oxman=$(ls /usr/share/emacs/*/lisp/org/ox-man.elc)
-    oxman=$(echo "$oxman" | head -n1)
+#if `ls /usr/share/emacs/*/lisp/org/ox-man.elc > /dev/null 2>&1` ; then
+if [ -e /usr/share/emacs/site-lisp/org-mode/ox-man.el ]  ; then
+    # oxman=$(ls /usr/share/emacs/*/lisp/org/ox-man.elc)
+    # oxman=$(echo "$oxman" | head -n1)
+    oxman="/usr/share/emacs/site-lisp/org-mode/ox-man.el"
     for i in ${projectName}*.org; do
 	wsn=`basename $i .org`
 	emacs  ${wsn}.org --batch -l $oxman -f org-man-export-to-man --kill
 	# the following sed fixes consequences of ox-man.el bugs:
-	sed  -e "s/\\\s[+-]2//g" -e "s/\\\u//g" -e "s/\.br$/\n.br/" -e "s/\$\\\\/\\\\\\\\/" -i ${wsn}.man
+#	sed  -e "s/\\\s[+-]2//g" -e "s/\\\u//g" -e "s/\.br$/\n.br/" -e "s/\$\\\\/\\\\\\\\/" -i ${wsn}.man
+	sed  -e "s/\\\s[+-]2//g" -e "s/\\\u//g" -e "s/\.br$/\n.br/" -i ${wsn}.man
 	mv ${wsn}.man man/
     done
 fi
@@ -50,5 +58,7 @@ echo $version > current_version.txt
 dpkg-buildpackage -rfakeroot -uc -v$version
 # See the package local-apt-repository:
 if [ -d /srv/local-apt-repository/ ]; then
-    mv  ../${projectName}*.deb /srv/local-apt-repository/
+    cp  ../${projectName}*.deb /srv/local-apt-repository/
 fi
+cp ../${projectName}_* /home/www/pub/ws/
+cp ../${projectName}_* current_release/

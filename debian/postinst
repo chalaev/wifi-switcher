@@ -8,50 +8,23 @@ fi
 
 case "$1" in
     "configure")
-	db_beginblock
-	# setting wireless interface name:
-	allInterfaces=$(ip link show | awk -F: '/^[0-9]+:/ { if ($2 !~ / *lo/)  {gsub(" ","",$2); print $2 }}' | sort -r | awk '{printf("%s ",$0)}')
-	choices=""; for i in $allInterfaces; do choices="$choices, $i"; done
-	db_subst wifi-switcher/wifiInterface allInterfaces $choices
-	db_get wifi-switcher/wifiInterface
-	if [ -z "$RET" ]; then # unset or empty string
-	    db_subst wifi-switcher/wifiInterface defaultWifiInterface $(echo "$allInterfaces" | awk '{print $1}')
-	else
-	    db_set wifi-switcher/wifiInterface $(echo $RET | awk '{print $1}')
-	    db_get wifi-switcher/wifiInterface
-	    db_subst wifi-switcher/wifiInterface defaultWifiInterface $RET
-	fi
-	db_input medium wifi-switcher/wifiInterface || true
-
 	db_get wifi-switcher/essid
 	if [ -z "$RET" ]; then
 	    db_set wifi-switcher/essid `hostname`
 	fi
-	db_input medium wifi-switcher/essid || true
-
 	db_get wifi-switcher/nameservers
 	if [ -z "$RET" ]; then
 	    nameServerList=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
 	    db_set wifi-switcher/nameservers $(echo "$nameServerList" | sed "s/,$//" | sort -u)
 	fi
-	db_input medium wifi-switcher/nameservers || true
-
 	db_get wifi-switcher/wifiPassphrase
 	if [ -z "$RET" ]; then
 	    db_set wifi-switcher/wifiPassphrase `apg -MNcl -a1 -n1`
 	fi
-	db_input medium wifi-switcher/wifiPassphrase || true
-
 	db_get wifi-switcher/ftpPassphrase
 	if [ -z "$RET" ]; then
 	    db_set wifi-switcher/ftpPassphrase `apg -MNcl -a1 -n1`
 	fi
-	db_input medium wifi-switcher/ftpPassphrase || true
- 	db_input medium wifi-switcher/ftpVirtualUser || true
-	db_endblock
-	db_input medium wifi-switcher/subnet || true
-	#############
-	db_go
 	#############
 	db_get wifi-switcher/wifiInterface
 	export wifiInterface="$RET"
@@ -65,18 +38,9 @@ case "$1" in
 	ftpVirtualUser="$RET"
 	db_get wifi-switcher/ftpPassphrase
 	ftpPassphrase="$RET"
-
-	# the following queries control input validity:
 	db_get wifi-switcher/subnet
 	subnet="$RET"
-	until $(perl -e "{exit 1 unless \"$subnet\" =~ m/^\d{1,3}\.\d{1,3}\.\d{1,3}\.0\$/; }")
-	do
-	    echo "Invalid subnet $subnet entered, please reenter."
-	    db_input critical wifi-switcher/subnet || true
-	    db_go
-	    db_get wifi-switcher/subnet
-	    subnet="$RET"
-	done
+
 	subnetPart=$(echo $subnet |sed "s/\([0-9]\+\)\\.\([0-9]\+\)\\.\([0-9]\+\)\\..*/\1.\2.\3./")
 	echo "$ftpVirtualUser\n$ftpPassphrase" | db_load -T -t hash /etc/vsftpd-wifi.db
 	[ -d /srv/ftp/$ftpVirtualUser ] || mkdir -p /srv/ftp/$ftpVirtualUser
@@ -194,9 +158,11 @@ EOF
 	# chmod o+r /etc/network/interfaces.wifi
 
  	# echo "Expecting wifi-switcher to be the monopolist in using $i daemon, I disable its autostart and divert its configuration"
-	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
-	    update-rc.d -f $i remove
-	done
+	# 2016-11-19: the following is removed by request of (online, not the one I have on my laptop) lintian:
+	# maintainer-script-should-not-use-service →
+	# for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
+	#     update-rc.d -f $i remove
+	# done
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

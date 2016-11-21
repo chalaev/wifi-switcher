@@ -1,3 +1,5 @@
+ -*-coding: utf-8;-*-
+
 1. Add a new setting into templates: wifiChannel, for now 6 is used in /etc/hostapd/wifi-switcher.conf
    and in /etc/network/interfaces.d/wifi-switcher
 2. Add dnsmasq (for simple dns sharing) as an alternative for isc-dhcp-server.
@@ -18,3 +20,15 @@
 10. Focus on using systemd? I do not want to loose compatibility with sysvinit...
 11. test the package in a situation when no wifi networks are available
 12. share internet from a 3G usb modem.
+
+2016-11-19: the following is removed to avoid lintian error "maintainer-script-should-not-use-service"
+(Apparently online lintian is different from the one installed on my debian-testing system):
+
+for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
+    update-rc.d -f $i remove
+done
+
+← This piece of code disabled launch of hostapd vsftpd isc-dhcp-server daemons at startup, because most people would need them only
+when wifi-switcher is in the wifi-server (ad-hoc mode).
+Removing unneeded services could save memory and perhaps improve security.
+Since lintian is unhappy about doing this inside the debian/postinst script, I suggest that the users remove these services manually.

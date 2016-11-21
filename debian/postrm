@@ -7,10 +7,11 @@ ftpVirtualUser="$RET"
 case "$1" in
     purge)
 
-	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
-	    echo "restoring default service for $i"
-	    update-rc.d -f $i defaults
-	done
+	# 2016-11-19: the following is removed by request of (online, not the one I have on my laptop) lintian:
+	# for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
+	#     echo "restoring default service for $i"
+	#     update-rc.d -f $i defaults
+	# done
 
 	for i in /etc/wpa_supplicant/wifi-switcher.conf /etc/vsftpd-wifi.db \
 /etc/sudoers.d/wifi-switcher \

@@ -14,7 +14,7 @@ The program is designed to be controlled through iceWM menu or pdmenu;
 it is restricted to the users from the netdev group.
 
 Newly discovered open and wpa2 SSIDs can easily be configured and added to the
-list of known networks.  (For more sophisticated enterprise networks one has to edit\\
+list of known networks.  (For more sophisticated enterprise networks one has to edit
 /etc/wpa__supplicant/wifi-switcher.conf manually.)  Optionally the wifi
 interface can be switched into (ad-hoc) hotspot mode. In this mode, a new (ad-hoc) wifi network is created;
 in addition an ftp-server vsftpd is started so that smartphones and other similar devices can exchange files with your linux system.
@@ -80,36 +80,37 @@ endgroup
 * CONFIGURATION FILES
 See also /usr/share/doc/wifi-switcher/HOTSPOT
 ** /etc/wpa__supplicant/wifi-switcher.conf
-This file stores priorities and authentification information in the format of a
+This file stores priorities and authentication information in the format of a
 wpasupplicant configuration file. If only PSK-encrypted and unprotected wireless
 networks are available, this file does not need to be edited manually.
 
 Its typical contents is shown below. The first two entries (PSK encryption and
 unprotected network) are added by the wifi-switcher; the third one uses more
 sophisticated enterprise encryption method and must be set up manually, except
-for priority which is adjusted by wifi-switcher.
+for priority which is adjusted by wifi-switcher:
+
 #+BEGIN_SRC conf
-ctrl__interface=/var/run/wpa__supplicant\\
-eapol__version=1\\
-network={\\
-ssid="Hoselton__Auto__Mall"\\
-key__mgmt=WPA-PSK\\
-psk=630326a26f999af453239041eec68acdf93788eb7483176001b4fbf17d414a20\\
-priority=0\\
-}\\
-network={\\
-ssid="McDonalds Free WiFi"\\
-key__mgmt=NONE\\
-priority=9\\
-}\\
-network={\\
-ssid="UR__Connected"\\
-key__mgmt=WPA-EAP\\
-eap=PEAP\\
-identity="myLogin"\\
-password="myVerySecretPassword"\\
-phase2="MSCHAPv2"\\
-priority=33\\
+ctrl_interface=/var/run/wpa_supplicant
+eapol_version=1
+network={
+ssid="Hoselton_Auto_Mall"
+key_mgmt=WPA-PSK
+psk=630326a26f999af453239041eec68acdf93788eb7483176001b4fbf17d414a20
+priority=0
+}
+network={
+ssid="McDonalds Free WiFi"
+key_mgmt=NONE
+priority=9
+}
+network={
+ssid="UR_Connected"
+key_mgmt=WPA-EAP
+eap=PEAP
+identity="myLogin"
+password="myVerySecretPassword"
+phase2="MSCHAPv2"
+priority=33
 }
 #+END_SRC
 
@@ -120,21 +121,25 @@ tablets. To see the corresponding settings (e.g., passwords) run
 #+BEGIN_SRC sh
 /usr/share/wifi-switcher/hotspot.sh info
 #+END_SRC
-with root priviledges. To change the settings, run
+with root privileges. To change the settings, run
 #+BEGIN_SRC sh
-dplg-reconfigure wifi-switcher.
+dplg-reconfigure wifi-switcher
 #+END_SRC
 
 * BUGS
-Email bug reports to Oleg Shalaev <chalaev@gmail.com>\\
-Please include output of the command
-#+BEGIN_SRC sh
-/usr/share/wifi-switcher/hotspot.sh bugreport
-#+END_SRC
-
+  Email bug reports to Oleg Shalaev <chalaev@gmail.com>
+  preferably using the command
+  #+BEGIN_SRC sh
+  reportbug --no-debconf wifi-switcher
+  #+END_SRC
+  Note: before sending the report, erase the section
+  #+BEGIN_SRC conf
+ -- Configuration Files:
+  #+END_SRC
+  at the end, since it may contain your passwords for wireless networks.
+  (Please do not use --no-config-files or -c reportbug options as they shrink the report too much removing important information.)
 * AUTHOR
 Written by Oleg Shalaev http://chalaev.com
 * SEE ALSO
-  https://github.com/chalaev/wifi-switcher
-  http://chalaev.com/projects
-
+  https://github.com/chalaev/wifi-switcher\\
+  http://chalaev.com/wifi-switcher

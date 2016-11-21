@@ -1,31 +1,49 @@
 * wifi-switcher-related issues
-  1. Somehow vsftpd and hostapd are not killed after the end of the ad-hoc wifi session. It is also possible that they are auto-launched at startup. Because of
-     that, wifi-switcher thinks that it is always in the "server mode".
+  1. I suggest users to stop auto-start for several services, typing the following (with root privileges):
+
+	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
+	    update-rc.d -f $i remove
+	done
+
+     These services can be restored anytime by
+
+     	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
+	    echo "restoring default service for $i"
+	    update-rc.d -f $i defaults
+	done
+
+     <-- You may want to restore them, e.g., if you remove wifi-switcher but will still need these services.
+
+     Exaplanation: wifi-switcher uses hostapd to create a wifi hotspot, so when hostapd daemon is running, it thinks that it has been
+     switched into adhoc mode and shows only one menu item: "client mode". When hostapd is installed, it automatically inserts
+     itself in the services list, so every time you call wifi-switcher from the menu for the first time after the computer is
+     powered on, you will see "client mode" instead of the list of available wifi networks.  Before this behavior was fixed in the
+     (de)installation script debian/postinst and debian/postrm, but this violates Debian policy.
   2. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
      when the ssid has space(s).
   3. Rarely, wifi-switcher detects no wifi networks, even though there are some
      available. In this case restart the service (under root):
      service wifi-switcher restart
 * wifi-switcher-unrelated issues
-1. When I soft-block wifi with Fn-F2 key combination on my Asus EEE, and then suspend the system with Fn-z (Fn-F1), wifi gets hard-blocked (see the output of
-   `rfkill list`), and only reboot helps to restore it.
-2. Unfortunately people tend to broadcast more than they actually need littering ether
-   with numerous hotspots. Sometimes (when there are too many wifi networks) you have to
-   choose the optimal wireless-channel in the file
-   /etc/network/interfaces.d/wifi-switcher. I had to do this when there were 30 wifi
-   networks available simultaneously in my office; these 30 networks were spread among
-   only three channels, and my (non-free firmware-brcm80211) wireless-card driver
-   perhaps does not realise that one should choose less occupied radio frequencies
-   (channels) for better connection quality.
-3. Sometimes wifi-switcher can not connect to an unprotected network, see iwlist-scan.output
+1. When I soft-block wifi with Fn-F2 key combination on my Asus EEE, and then suspend the system with Fn-z (Fn-F1), wifi gets
+   hard-blocked (see the output of `rfkill list`), and only reboot helps to restore it. This does not happen on ThinkPad T430.
+2. Unfortunately people tend to broadcast more than they actually need littering ether with numerous hotspots. Sometimes (when there
+   are too many wifi networks) you have to choose the optimal wireless-channel in the file
+   /etc/network/interfaces.d/wifi-switcher. I had to do this when there were 30 wifi networks available simultaneously in my office;
+   these 30 networks were spread among only three channels, and my (non-free firmware-brcm80211) wireless-card driver perhaps does
+   not realise that one should choose less occupied radio frequencies (channels) for better connection quality.
+3. Sometimes wifi-switcher can not connect to an unprotected network, see iwlist-scan.output on
+   https://github.com/chalaev/wifi-switcher
+   This was a problem with the University of Rochester wifi network; it lasted for several months and then gone by itself.
 
 * Issues on older debian versions
 1. Inactive /etc/sudoers.d/ As of Debian version 1.7.2p1-1, the default /etc/sudoers
    file created on installation of the package now includes the directive:
    #includedir /etc/sudoers.d
    Problem: in earlier linux versions, files in
-   /etc/sudoers.d/ might not be read.  This can be fixed by including #includedir
-   /etc/sudoers.d into the /etc/sudoers file.
+   /etc/sudoers.d/ might not be read.  This can be fixed by including the line
+   #includedir /etc/sudoers.d
+   into the /etc/sudoers file.
 2. Similar problem with the directory /etc/network/interfaces.d/
    which is read by the command
    source /etc/network/interfaces.d/*
