@@ -30,35 +30,34 @@ if [ -e /usr/share/emacs/site-lisp/org-mode/ox-man.el ]  ; then
 	emacs  ${wsn}.org --batch -l $oxman -f org-man-export-to-man --kill
 	# the following sed fixes consequences of ox-man.el bugs:
 #	sed  -e "s/\\\s[+-]2//g" -e "s/\\\u//g" -e "s/\.br$/\n.br/" -e "s/\$\\\\/\\\\\\\\/" -i ${wsn}.man
-	sed  -e "s/\\\s[+-]2//g" -e "s/\\\u//g" -e "s/\.br$/\n.br/" -i ${wsn}.man
+	sed  -e "s/\\\s[+-]2//g" -e "s/\\\u//g" -e "s/\.br$/\n.br/" -e  's/^\.TH "" "1"/.TH "wifi-switcher" "1"/' -i ${wsn}.man
 	mv ${wsn}.man man/
     done
 fi
 rm ../${projectName}_*
 
-# задача: прочитать версию из файла или из опции:
+# https://www.debian.org/doc/debian-policy/ch-source.html#s-dpkgchangelog
 # version="1.0"
-if [ -e current_version.txt ] ; then read version < current_version.txt ; else version="1.0" ; fi
-version=$(echo  $version + 0.1 | bc)
-while getopts v: opt ; do
-    case "$opt" in
-	v)  version="$OPTARG" ;;
-	\?) echo "Invalid option: -$OPTARG" >&2  ;;
-    esac
-done
-LC_NUMERIC=C version=$(printf "%1.1f" $version)
-# temporary fix because for version number ≠1.0 dpkg-buildpackage below fails:
-version="1.0"
+# if [ -e current_version.txt ] ; then read version < current_version.txt ; else version="1.0" ; fi
+version=`dpkg-parsechangelog --show-field Version | sed "s/-[0-9]\+$//"`
 echo "Packaging the ${version}th version."
+mv -i .git ../wifi-switcher.git
+mv -i .pc ../wifi-switcher.pc
 dh_make -p ${projectName}_${version} -c gpl -e chalaev@gmail.com --indep --yes --createorig
-echo $version > current_version.txt
+mv -i  ../wifi-switcher.pc .pc
+mv -i  ../wifi-switcher.git .git
+# echo $version > current_version.txt
 
-# следующая строчка не работает, конфликт версий (если версия не равна 1.0)
 # dpkg-buildpackage -rfakeroot -us -uc -v$version
-dpkg-buildpackage -rfakeroot -uc -v$version
+# dpkg-buildpackage -rfakeroot -uc -v$version
+dpkg-buildpackage -rfakeroot -uc
 # See the package local-apt-repository:
 if [ -d /srv/local-apt-repository/ ]; then
     cp  ../${projectName}*.deb /srv/local-apt-repository/
 fi
-cp ../${projectName}_* /home/www/pub/ws/
-cp ../${projectName}_* current_release/
+
+# Finally, I publish both on Debian and http://chalaev.com
+cd .. ; yes | debsign wifi-switcher_*_amd64.changes
+# dupload -to mentors wifi-switcher_*_amd64.changes
+# rsync -avu  wifi-switcher_* chalaevc@chalaev.com:public_html/pub/ws/
+# ssh chalaevc@chalaev.com ". perms.sh"

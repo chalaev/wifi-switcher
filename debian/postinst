@@ -1,4 +1,5 @@
-#!/bin/sh -e
+#!/bin/sh
+set -e
 . /usr/share/debconf/confmodule
 db_version 2.0
 
@@ -158,7 +159,7 @@ EOF
 	# chmod o+r /etc/network/interfaces.wifi
 
  	# echo "Expecting wifi-switcher to be the monopolist in using $i daemon, I disable its autostart and divert its configuration"
-	# 2016-11-19: the following is removed by request of (online, not the one I have on my laptop) lintian:
+	# 2016-11-19: the following is removed by request of lintian:
 	# maintainer-script-should-not-use-service →
 	# for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
 	#     update-rc.d -f $i remove

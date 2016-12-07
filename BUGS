@@ -1,5 +1,6 @@
 * wifi-switcher-related issues
-  1. I suggest users to stop auto-start for several services, typing the following (with root privileges):
+  1. update-rc: start and stop actions are no more supported
+  2. I suggest users to stop auto-start for several services, typing the following (with root privileges):
 
 	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
 	    update-rc.d -f $i remove
@@ -19,9 +20,9 @@
      itself in the services list, so every time you call wifi-switcher from the menu for the first time after the computer is
      powered on, you will see "client mode" instead of the list of available wifi networks.  Before this behavior was fixed in the
      (de)installation script debian/postinst and debian/postrm, but this violates Debian policy.
-  2. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
+  3. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
      when the ssid has space(s).
-  3. Rarely, wifi-switcher detects no wifi networks, even though there are some
+  4. Rarely, wifi-switcher detects no wifi networks, even though there are some
      available. In this case restart the service (under root):
      service wifi-switcher restart
 * wifi-switcher-unrelated issues

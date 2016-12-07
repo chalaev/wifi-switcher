@@ -1,35 +1,31 @@
-Template: wifi-switcher/title
-Type: title
-Description: wifi-switcher
-
 Template: wifi-switcher/wifiInterface
 Type: select
 Choices: ${allInterfaces}
 Default: ${defaultWifiInterface}
-Description: wifi network interface:
+_Description: wifi network interface:
 
 Template: wifi-switcher/essid
 Type: string
-Description: SSID for the  hotspot (ad-hoc) network (no spaces allowed):
+_Description: SSID for the  hotspot (ad-hoc) network (no spaces allowed):
 
 Template: wifi-switcher/wifiPassphrase
 Type: string
-Description: PSK password for the hotspot (ad-hoc) network:
+_Description: PSK password for the hotspot (ad-hoc) network:
 
 Template: wifi-switcher/ftpPassphrase
 Type: string
-Description: FTP password:
+_Description: FTP password:
 
 Template: wifi-switcher/ftpVirtualUser
 Type: string
 Default: switcher
-Description: FTP user name in the hotspot (ad-hoc) network:
+_Description: FTP user name in the hotspot (ad-hoc) network:
 
 Template: wifi-switcher/nameservers
 Type: string
-Description: One or more (coma-separated) nameservers for the ad-hoc network:
+_Description: One or more (coma-separated) nameservers for the ad-hoc network:
 
 Template: wifi-switcher/subnet
 Type: string
 Default: 192.168.1.0
-Description: Subnet for the ad-hoc network:
+_Description: Subnet for the ad-hoc network:

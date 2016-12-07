@@ -31,10 +31,23 @@ To change ftp and adhoc passwords or the wifi-interface name, run
 #+BEGIN_SRC sh
 dpkg-reconfigure wifi-switcher
 #+END_SRC
-From time to time packages ~hostapd~ and ~vsftpd~ used by ~wifi-switcher~ are updated;
-during the update these services are set to be launched at system start and always be active.
-Use ~dpkg-reconfigure wifi-switcher~ to de-activate them;
 ~wifi-switcher~ assumes that ~hostapd~ is running only during its "adhoc" mode and will be messed up otherwise.
+So when ~wifi-switcher~ there should be no ~hostapd~ running.
+To ensure that ~hostapd~ and ~isc-dhcp-server~ are not launched at boot, disable them (as root):
+#+BEGIN_SRC sh
+for i in $(service --status-all | grep "hostapd\|isc-dhcp-server" | awk '{print $NF}') ; do
+    update-rc.d -f $i remove
+done
+#+END_SRC
+(You might want to disable vsftpd autostart as well.)
+From time to time packages ~hostapd~,  ~isc-dhcp-server~, and ~vsftpd~ are updated and hence reconfigured to autostart again so you
+may have to disable them again.
+
+Otherwise just add
+#+BEGIN_SRC sh
+sudo /usr/sbin/service hostapd stop
+#+END_SRC
+to your ~/.profile
 
 * Configuration examples for icewm and pdmenu
 A line in my ~~/.icewm/menu~ file generating wifi menu is
