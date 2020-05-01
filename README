@@ -15,8 +15,8 @@ QUICK START
 Download (or create yourself using pack.sh) and install
 wifi-switcher₁.0-1all.deb:
 
-    wget http://chalaev.com/pub/wifi-switcher_1.0-1_all.deb
-    dpkg -i wifi-switcher_1.0-1_all.deb
+    wget https://github.com/chalaev/chalaev/raw/master/pub/ws/wifi-switcher_2.0-2_all.deb
+    dpkg -i wifi-switcher_2.0-2_all.deb
 
 Use configuration examples described below.
 Add networks automatically (see screenshots) or manually (edit
