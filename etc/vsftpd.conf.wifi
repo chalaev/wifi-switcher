@@ -1,6 +1,6 @@
 # This vsftpd configuration has been written for the wifi-switcher package.
 # It is not supposed to be opened to the big internet audience; note that it allows uploading.
-# Note: older versions (e.g., 2.3.5) of may not start with "allow_writeable_chroot=YES":
+# Note: older versions (e.g., 2.3.5) may not start with "allow_writeable_chroot=YES":
 allow_writeable_chroot=YES
 # if you allow file upload (write_enable), consider limiting the size of the ftp directory by
 # placing it either on a separate partition, or inside the (mounted with "loop" option) file.

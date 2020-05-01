@@ -54,15 +54,15 @@ case "$1" in
 %netdev ALL=NOPASSWD:/sbin/iwlist ${wifiInterface} scan
 %netdev ALL=NOPASSWD:/sbin/ifdown ${wifiInterface}
 %netdev ALL=NOPASSWD:/sbin/ifup ${wifiInterface}=wifiswitcher
-%netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher restart
-%netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher start
-%netdev ALL=NOPASSWD:/usr/sbin/service wifi-switcher stop
-%netdev ALL=NOPASSWD:/usr/sbin/service hostapd start
-%netdev ALL=NOPASSWD:/usr/sbin/service hostapd stop
-%netdev ALL=NOPASSWD:/usr/sbin/service isc-dhcp-server start
-%netdev ALL=NOPASSWD:/usr/sbin/service isc-dhcp-server stop
-%netdev ALL=NOPASSWD:/usr/sbin/service vsftpd start
-%netdev ALL=NOPASSWD:/usr/sbin/service vsftpd stop
+%netdev ALL=NOPASSWD:/bin/systemctl restart wifi-switcher.service
+%netdev ALL=NOPASSWD:/bin/systemctl start wifi-switcher.service
+%netdev ALL=NOPASSWD:/bin/systemctl stop wifi-switcher.service
+%netdev ALL=NOPASSWD:/bin/systemctl start hostapd.service
+%netdev ALL=NOPASSWD:/bin/systemctl stop hostapd.service
+%netdev ALL=NOPASSWD:/bin/systemctl start isc-dhcp-server.service
+%netdev ALL=NOPASSWD:/bin/systemctl stop isc-dhcp-server.service
+%netdev ALL=NOPASSWD:/bin/systemctl start vsftpd.service
+%netdev ALL=NOPASSWD:/bin/systemctl stop vsftpd.service
 EOF
 	cat > /etc/network/interfaces.d/wifi-switcher <<EOF
 # This file belongs to the wifi-switcher package;

@@ -21,14 +21,14 @@ wpa__supplicant, udhcpc, hostapd и isc-dhcp-server.
 wifi-switcher.
 Отключить авто-загрузку можно, запустив следующую команду (с правами root):
 #+BEGIN_SRC sh
-for i in $(service --status-all | grep "hostapd\\|isc-dhcp-server" | awk '{print $NF}') ; do
-    update-rc.d -f $i remove
-done
+systemctl disable hostapd.service
+systemctl disable vsftpd.service
+systemctl disable isc-dhcp-server.service
 #+END_SRC
 (Возможно, вы захотите отключить аналогичным образом также и vsftpd.)
 Можно и не отключать авто-загрузку, но тогда следует добавить строку
 #+BEGIN_SRC sh
-sudo /usr/sbin/service hostapd stop
+systemctl stop hostapd.service
 #+END_SRC
 в пользовательский файл ~/.profile
 
@@ -156,7 +156,7 @@ priority=33
 dplg-reconfigure wifi-switcher
 
 * Ошибки
-  Об ошибках просьба сообщать Олегу Шалаеву по электронной почте chalaev@gmail.com
+  Об ошибках просьба сообщать Олегу Шалаеву по электронной почте oleg@chalaev.com
   Лучше всего воспользоваться для этого командой
   #+BEGIN_SRC sh
   reportbug --no-debconf wifi-switcher
@@ -168,7 +168,7 @@ dplg-reconfigure wifi-switcher
   которая может содержать ваши пароли для беспроводных сетей. (Пожалуйста, не используйте опции --no-config-files или -c программы
   reportbug; они уберут из сообщения не только секцию "Configuration Files", но и другую важную информацию.)
 * Автор
-  Олег Шалаев <chalaev@gmail.com>.
+  Олег Шалаев <oleg@chalaev.com>.
 * Смотреть также
   https://github.com/chalaev/wifi-switcher\\
   http://chalaev.com/wifi-switcher

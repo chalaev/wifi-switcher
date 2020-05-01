@@ -1,7 +1,7 @@
 Source: wifi-switcher
 Section: net
 Priority: optional
-Maintainer: Oleg Shalaev <chalaev@gmail.com>
+Maintainer: Oleg Shalaev <oleg@chalaev.com>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.8
 Homepage: http://chalaev.com/wifi-switcher

@@ -1,12 +1,20 @@
+wifi-switcher (2.0-1) unstable; urgency=high
+
+  * Fixed configuration problems (interface name was not determined in the previous version).
+
+  * Switched to modern systemd for service control.
+
+ -- Oleg Shalaev <oleg@chalaev.com>  Fri, 01 May 2020 17:22:23 -0400
+
 wifi-switcher (1.0-2) unstable; urgency=low
 
   * Fixed some of lintian complaints.
 
- -- Oleg Shalaev <chalaev@gmail.com>  Wed, 07 Dec 2016 17:32:55 -0400
+ -- Oleg Shalaev <oleg@chalaev.com>  Wed, 07 Dec 2016 17:32:55 -0400
 
 
 wifi-switcher (1.0-1) unstable; urgency=low
 
   * Initial release (Closes: #805116).
 
- -- Oleg Shalaev <chalaev@gmail.com>  Wed, 07 Oct 2015 22:03:16 -0400
+ -- Oleg Shalaev <oleg@chalaev.com>  Wed, 07 Oct 2015 22:03:16 -0400

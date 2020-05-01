@@ -15,14 +15,14 @@ wifi-switcher is a wrapper for wpa__supplicant, udhcpc, hostapd, and isc-dhcp-se
 To work well it needs to have monopoly on usage of these programs.
 To ensure that hostapd and isc-dhcp-server are not launched at boot, disable them (as root):
 #+BEGIN_SRC sh
-for i in $(service --status-all | grep "hostapd\|isc-dhcp-server" | awk '{print $NF}') ; do
-    update-rc.d -f $i remove
-done
+systemctl disable hostapd.service
+systemctl disable vsftpd.service
+systemctl disable isc-dhcp-server.service
 #+END_SRC
 (You might want to disable vsftpd autostart as well.)
 Otherwise just add
 #+BEGIN_SRC sh
-sudo /usr/sbin/service hostapd stop
+systemctl stop hostapd.service
 #+END_SRC
 to your ~/.profile
 
@@ -140,7 +140,7 @@ dplg-reconfigure wifi-switcher
 #+END_SRC
 
 * BUGS
-  Email bug reports to Oleg Shalaev <chalaev@gmail.com>
+  Email bug reports to Oleg Shalaev <oleg@chalaev.com>
   preferably using the command
   #+BEGIN_SRC sh
   reportbug --no-debconf wifi-switcher

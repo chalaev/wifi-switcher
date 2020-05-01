@@ -6,24 +6,24 @@ essid=`hostname`
 
 case "$1" in
 start)
-    sudo /usr/sbin/service wifi-switcher stop
+    sudo /bin/systemctl stop wifi-switcher.service
     # not needed: sudo /sbin/ifdown ${wifi_interface}
     sudo /sbin/ifup ${wifi_interface}=wifiswitcher
     for i in hostapd isc-dhcp-server vsftpd; do
 	echo "starting $i"
-	sudo /usr/sbin/service $i start
+	sudo /bin/systemctl start $i.service
     done
     ;;
 stop)
     for i in hostapd isc-dhcp-server vsftpd; do
 	echo "stopping $i"
-	sudo /usr/sbin/service $i stop
+	sudo /bin/systemctl stop $i.service
     done
     # if we do not kill dhcp server, it might be erroneously used for obtaining IP address
     # instead of (perhaps slow) dhcp server provided by the wifi network:
     [ -f /run/dhcpd.pid ] && kill $(cat /run/dhcpd.pid) && rm /run/dhcpd.pid
     sudo /sbin/ifdown ${wifi_interface}
-    sudo /usr/sbin/service wifi-switcher start
+    sudo /bin/systemctl start wifi-switcher.service
 ;;
 
 info)

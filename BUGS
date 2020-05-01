@@ -1,17 +1,23 @@
 * wifi-switcher-related issues
-  1. update-rc: start and stop actions are no more supported
-  2. I suggest users to stop auto-start for several services, typing the following (with root privileges):
+  1. I started using dnsmasq which conflicts with isc-dhcp server!
+  2. something is wrong with db_subst commands in postinst script. If initially the wifi interface name was set incorrectly (e.g., empty) then we are in trouble! This happens, e.g. when I
+     install wifi-switcher on a bootable usb stick -- very inconvenient!
+  3. prompt screens are not displayed during dpkg-reconfigure
+  4. On some sytems, wifi interface name is not automatically written into the file /etc/default/wifi-switcher
+  5. There seems to be a change in isc-dhcp-server configuration syntax: commas are separating IPs now, e.g.,
+     option domain-name-servers 192.168.40.2, 192.168.41.3;
+  6. update-rc: start and stop actions are no more supported
+  7. I suggest users to stop auto-start for several services, typing the following (with root privileges):
 
-	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
-	    update-rc.d -f $i remove
-	done
+     systemctl disable hostapd.service
+     systemctl disable vsftpd.service
+     systemctl disable isc-dhcp-server.service
 
      These services can be restored anytime by
 
-     	for i in $(service --status-all | grep "hostapd\|vsftpd\|isc-dhcp-server" | awk '{print $NF}') ; do
-	    echo "restoring default service for $i"
-	    update-rc.d -f $i defaults
-	done
+     systemctl enable hostapd.service
+     systemctl enable vsftpd.service
+     systemctl enable isc-dhcp-server.service
 
      <-- You may want to restore them, e.g., if you remove wifi-switcher but will still need these services.
 
@@ -20,9 +26,9 @@
      itself in the services list, so every time you call wifi-switcher from the menu for the first time after the computer is
      powered on, you will see "client mode" instead of the list of available wifi networks.  Before this behavior was fixed in the
      (de)installation script debian/postinst and debian/postrm, but this violates Debian policy.
-  3. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
+  8. does not write psk into the /etc/wpa_supplicant/wifi-switcher.conf for a newly connected network.
      when the ssid has space(s).
-  4. Rarely, wifi-switcher detects no wifi networks, even though there are some
+  9. Rarely, wifi-switcher detects no wifi networks, even though there are some
      available. In this case restart the service (under root):
      service wifi-switcher restart
 * wifi-switcher-unrelated issues

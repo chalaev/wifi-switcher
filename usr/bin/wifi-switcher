@@ -217,7 +217,7 @@ else {# $commands[2] specifies if encryption key is required
 		 -label => 'Password', -show => '*', -labelPack => [-side => 'left'])->pack;
 	$answer = $db->Show();
 	if ($answer eq "Ok") {
-	    foreach  (`/usr/bin/wpa_passphrase $ssid $pw`) {
+	    foreach  (`/usr/bin/wpa_passphrase '$ssid' '$pw'`) {
 		if ($_ =~ "[ \t]*psk=") { s/^[ \t]*psk=(.+)/\1/; $psk = $_ ; }}}
 	%connectToMe = ('ssid'=>$ssid,'priority'=>3+$pris[-1],'psk'=>$psk,'key_mgmt'=>$keyMgmt);}
     else { $mw->Dialog(-title => 'Sorry',  -text => 'Can not handle this encryption type yet.', 
@@ -245,7 +245,7 @@ if ($commands[0] eq "connect" || $commands[0] eq "forget") {# обновляем
 			print(wpaSuppFile "$prop=",$$stanza{"$prop"},"\n");}}}
 	print wpaSuppFile "}\n\n";}
     close(wpaSuppFile);
-    `sudo /usr/sbin/service wifi-switcher restart`
+    `sudo /bin/systemctl restart wifi-switcher.service`
 }} # the last brace returned us to the zeroth level
 
 sub memberQ {# instead of (experimental feature) ~~

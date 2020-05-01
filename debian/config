@@ -10,7 +10,10 @@ if [ "$1" = "configure" ]; then
     # setting wireless interface name:
     allInterfaces=$(ip link show | awk -F: '/^[0-9]+:/ { if ($2 !~ / *lo/)  {gsub(" ","",$2); print $2 }}' | sort -r | awk '{printf("%s ",$0)}')
 
-    choices=""; for i in $allInterfaces; do choices="$choices, $i"; done
+    # was before 2020-05-01:
+    # choices=""; for i in $allInterfaces; do choices="$choices, $i"; done
+    # changed to
+    choices=`echo $allInterfaces | sed "s/ /, /g"`
 
     db_get wifi-switcher/wifiInterface
     if [ -z "$RET" ]; then # unset or empty string

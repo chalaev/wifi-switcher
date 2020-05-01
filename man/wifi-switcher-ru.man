@@ -208,7 +208,7 @@ dplg-reconfigure wifi-switcher
 
 .SH "Ошибки"
 .PP
-Об ошибках просьба сообщать Олегу Шалаеву по электронной почте chalaev@gmail.com
+Об ошибках просьба сообщать Олегу Шалаеву по электронной почте oleg@chalaev.com
 Лучше всего воспользоваться для этого командой
 .RS
 .nf
@@ -229,7 +229,7 @@ dplg-reconfigure wifi-switcher
 reportbug; они уберут из сообщения не только секцию "Configuration Files", но и другую важную информацию.)
 .SH "Автор"
 .PP
-Олег Шалаев <chalaev@gmail.com>.
+Олег Шалаев <oleg@chalaev.com>.
 .SH "Смотреть также"
 .PP
 \fIhttps://github.com/chalaev/wifi-switcher\fP

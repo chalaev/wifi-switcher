@@ -3,7 +3,7 @@ Upstream-Name: wifi-switcher
 Source: http://chalaev.com/wifi-switcher
 
 Files: usr/share/wifi-switcher/* usr/bin/wifi-switcher TODO README BUGS HOSTSPOT man/wifi-switcher.*
-Copyright: 2015 Oleg Shalaev <chalaev@gmail.com>
+Copyright: 2015 Oleg Shalaev <oleg@chalaev.com>
 License: GPL-3.0+
 
 Files: etc/wpa_supplicant/ws-action.sh
@@ -12,11 +12,11 @@ License: GPL-3.0+
 
 Files: etc/init.d/wifi-switcher
 Copyright: 2014-2015 Roman Galeev http://jamhed.dreamwidth.org/82198.html
-	   2015 Oleg Shalaev <chalaev@gmail.com>
+	   2015 Oleg Shalaev <oleg@chalaev.com>
 License: GPL-3.0+
 
 Files: etc/*
-Copyright: 2015 Oleg Shalaev <chalaev@gmail.com>
+Copyright: 2015 Oleg Shalaev <oleg@chalaev.com>
 License: GPL-3.0+
 
 Files: usr/share/wifi-switcher/connected.png
@@ -28,7 +28,7 @@ Copyright: 2015 Dat Nguyen <splashyicons@gmail.com>
 License: Public-Domain
 
 Files: debian/*
-Copyright: 2015 Oleg Shalaev <chalaev@gmail.com>
+Copyright: 2015 Oleg Shalaev <oleg@chalaev.com>
 License: GPL-3.0+
 
 License: GPL-3.0+

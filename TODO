@@ -31,4 +31,10 @@ done
 ← This piece of code disabled launch of hostapd vsftpd isc-dhcp-server daemons at startup, because most people would need them only
 when wifi-switcher is in the wifi-server (ad-hoc mode).
 Removing unneeded services could save memory and perhaps improve security.
+
 Since lintian is unhappy about doing this inside the debian/postinst script, I suggest that the users remove these services manually.
+
+2020-05-01: Nowadays debian is switched to systemd where disabling services is different:
+systemctl disable hostapd.service
+systemctl disable vsftpd.service
+systemctl disable isc-dhcp-server.service

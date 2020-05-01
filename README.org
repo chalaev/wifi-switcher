@@ -1,6 +1,6 @@
 #+TITLE:     wifi-switcher
 #+AUTHOR:    Oleg Shalaev
-#+EMAIL:     chalaev@gmail.com
+#+EMAIL:     oleg@chalaev.com
 #+OPTIONS: ^:nil
 #+LANGUAGE:  en
 #+LINK_HOME: http://chalaev.com/projects.html
@@ -35,9 +35,9 @@ dpkg-reconfigure wifi-switcher
 So when ~wifi-switcher~ there should be no ~hostapd~ running.
 To ensure that ~hostapd~ and ~isc-dhcp-server~ are not launched at boot, disable them (as root):
 #+BEGIN_SRC sh
-for i in $(service --status-all | grep "hostapd\|isc-dhcp-server" | awk '{print $NF}') ; do
-    update-rc.d -f $i remove
-done
+systemctl disable hostapd.service
+systemctl disable vsftpd.service
+systemctl disable isc-dhcp-server.service
 #+END_SRC
 (You might want to disable vsftpd autostart as well.)
 From time to time packages ~hostapd~,  ~isc-dhcp-server~, and ~vsftpd~ are updated and hence reconfigured to autostart again so you
@@ -45,7 +45,7 @@ may have to disable them again.
 
 Otherwise just add
 #+BEGIN_SRC sh
-sudo /usr/sbin/service hostapd stop
+systemctl stop hostapd.service
 #+END_SRC
 to your ~/.profile
 

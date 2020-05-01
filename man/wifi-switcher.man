@@ -199,7 +199,7 @@ with root privileges. To change the settings, run
 
 .SH "BUGS"
 .PP
-Email bug reports to Oleg Shalaev <chalaev@gmail.com>
+Email bug reports to Oleg Shalaev <oleg@chalaev.com>
 preferably using the command
 .RS
 .nf

@@ -5,6 +5,10 @@
 # debsign wifi-switcher_1.0-1_amd64.changes
 # dupload -to mentors .
 
+if [ -e changelog.gz ] ; then rm changelog.gz ; fi
+cat debian/changelog > changelog
+gzip changelog
+
 if [ -e debian/control ]; then
     projectName=$(awk "\$1==\"Package:\" {print \$2}"  debian/control)
 fi
@@ -12,7 +16,9 @@ if [ -z "$projectName" ] || [ "$projectName" != "wifi-switcher" ]; then
     echo "This is a wrong directory, please change to correct one"
     exit 1
 fi
-find /srv/local-apt-repository/ -name "${projectName}*.deb" -exec rm {} \;
+# commented it out 2020-05-01:
+# find /srv/local-apt-repository/ -name "${projectName}*.deb" -exec rm {} \;
+
 if [ -e debian/${projectName} ]; then
     rm -r debian/${projectName}
 fi
@@ -41,23 +47,26 @@ rm ../${projectName}_*
 # if [ -e current_version.txt ] ; then read version < current_version.txt ; else version="1.0" ; fi
 version=`dpkg-parsechangelog --show-field Version | sed "s/-[0-9]\+$//"`
 echo "Packaging the ${version}th version."
-mv -i .git ../wifi-switcher.git
-mv -i .pc ../wifi-switcher.pc
-dh_make -p ${projectName}_${version} -c gpl -e chalaev@gmail.com --indep --yes --createorig
-mv -i  ../wifi-switcher.pc .pc
-mv -i  ../wifi-switcher.git .git
+# mv -i .git ../wifi-switcher.git
+# mv -i .pc ../wifi-switcher.pc
+dh_make -p ${projectName}_${version} -c gpl -e oleg@chalaev.com --indep --yes --createorig
+# mv -i  ../wifi-switcher.pc .pc
+# mv -i  ../wifi-switcher.git .git
 # echo $version > current_version.txt
 
 # dpkg-buildpackage -rfakeroot -us -uc -v$version
 # dpkg-buildpackage -rfakeroot -uc -v$version
-dpkg-buildpackage -rfakeroot -uc
+echo "will call dpkg-buildpackage now"
+dpkg-buildpackage -rfakeroot -uc -koleg@chalaev.com
 # See the package local-apt-repository:
-if [ -d /srv/local-apt-repository/ ]; then
-    cp  ../${projectName}*.deb /srv/local-apt-repository/
-fi
+# commented it out 2020-05-01:
+# if [ -d /srv/local-apt-repository/ ]; then
+#     cp  ../${projectName}*.deb /srv/local-apt-repository/
+# fi
 
 # Finally, I publish both on Debian and http://chalaev.com
-cd .. ; yes | debsign wifi-switcher_*_amd64.changes
+echo "will call debsign now"
+cd .. ; yes | debsign -k oleg@chalaev.com wifi-switcher_*_amd64.changes
 # dupload -to mentors wifi-switcher_*_amd64.changes
 # rsync -avu  wifi-switcher_* chalaevc@chalaev.com:public_html/pub/ws/
 # ssh chalaevc@chalaev.com ". perms.sh"
