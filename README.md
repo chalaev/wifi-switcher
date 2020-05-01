@@ -20,7 +20,7 @@ See more information in `wifi-switcher*.org` files.
 
 # Quick start
 
-Download (or create yourself using `pack.sh`) and install [wifi-switcher\_last\_all.deb](https://github.com/chalaev/chalaev/raw/master/pub/ws/wifi-switcher_2.0-1_all.deb)
+Download (or create yourself using `pack.sh`) and install [wifi-switcher\_2.0-1\_all.deb](https://github.com/chalaev/chalaev/raw/master/pub/ws/wifi-switcher_2.0-1_all.deb)
 
     wget https://github.com/chalaev/chalaev/raw/master/pub/ws/wifi-switcher_2.0-1_all.deb
     dpkg -i wifi-switcher_2.0-1_all.deb
@@ -28,7 +28,7 @@ Download (or create yourself using `pack.sh`) and install [wifi-switcher\_last\_
 (In Debian stretch instead of `dpkg -i wifi-switcher_2.0-1_all.deb`
 I use `local-apt-repository` package which makes `.deb` files stored in
 `/srv/local-apt-repository/` available to standard system utilities like
-`apt-get` or `aptitude`.
+`apt-get` or `aptitude`.)
 
 Use configuration examples described below.  
 Add networks automatically (see screenshots) or manually (edit `/etc/wpa_supplicant/wifi-switcher.conf`).
