@@ -1,0 +1,36 @@
+Format: 1.8
+Date: Fri, 01 May 2020 17:22:23 -0400
+Source: wifi-switcher
+Binary: wifi-switcher
+Architecture: source all
+Version: 2.0-1
+Distribution: unstable
+Urgency: high
+Maintainer: Oleg Shalaev <oleg@chalaev.com>
+Changed-By: Oleg Shalaev <oleg@chalaev.com>
+Description:
+ wifi-switcher - wifi-manager for icewm and pdmenu
+Changes:
+ wifi-switcher (2.0-1) unstable; urgency=high
+ .
+   * Fixed configuration problems (interface name was not determined in the previous version).
+ .
+   * Switched to modern systemd for service control.
+Checksums-Sha1:
+ e229cab9650bcd434cecfc4c098a814df920ac75 852 wifi-switcher_2.0-1.dsc
+ 0ea983b62cd78c7d981376bf03ff640869d3a667 865112 wifi-switcher_2.0.orig.tar.xz
+ 69643f64c95650bbcf413c43ae9997e26b7cfbbf 16244 wifi-switcher_2.0-1.debian.tar.xz
+ 226248af8a06c9f0b0c864810384f09084e2bf75 30560 wifi-switcher_2.0-1_all.deb
+ 3b95d3cf35dcdddf76e4a42d82ce28d2432d5016 4796 wifi-switcher_2.0-1_amd64.buildinfo
+Checksums-Sha256:
+ 63e3800aa78c4d3ea9cd5d8a3ac5d614edf98555649b10a9076fcb975481134d 852 wifi-switcher_2.0-1.dsc
+ 32aba741cab9acea0f3d8bfd999ff7d0e6fb9dc32e8a293294dfd4c88fe8b03f 865112 wifi-switcher_2.0.orig.tar.xz
+ ed7d8b68fec5c3491789974631f1b32c709860770e2ab622dc3f72f874085895 16244 wifi-switcher_2.0-1.debian.tar.xz
+ c38ac3363d8e5e2dfd1a90779b107c75d06b27b462913155683d090179cc39f3 30560 wifi-switcher_2.0-1_all.deb
+ cb04354766c517abfe56aedbaa1c61782736117ec95772b9082b34656a28b4c5 4796 wifi-switcher_2.0-1_amd64.buildinfo
+Files:
+ 70a9edf5a29c437f3afc1b435c75d122 852 net optional wifi-switcher_2.0-1.dsc
+ c80307a40cdf17d5ba04c45c20635a9d 865112 net optional wifi-switcher_2.0.orig.tar.xz
+ 5136f2e79ca33b7d901e90bb737f94c8 16244 net optional wifi-switcher_2.0-1.debian.tar.xz
+ 3fe22a6180ba6ad28cdef562b067d2b3 30560 net optional wifi-switcher_2.0-1_all.deb
+ 73bdd7cf5854ef47fc8055f5e071fee6 4796 net optional wifi-switcher_2.0-1_amd64.buildinfo

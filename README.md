@@ -1,8 +1,8 @@
 
 # Table of Contents
 
-1.  [Quick start](#org53aa553)
-2.  [Configuration examples for icewm and pdmenu](#orgb13a5a3)
+1.  [Quick start](#org330cb79)
+2.  [Configuration examples for icewm and pdmenu](#org70d776a)
 
 wifi-switcher is a simple automatic switcher between wifi networks for laptops with
 [icewm](http://www.icewm.org) (window manager) or [pdmenu](https://joeyh.name/code/pdmenu/) (console menu program).
@@ -13,13 +13,13 @@ Also wifi-switcher can work in the wifi-server (adhoc) mode where it launches vs
 See more information in `wifi-switcher*.org` files.
 
 
-<a id="org53aa553"></a>
+<a id="org330cb79"></a>
 
 # Quick start
 
-Download (or create yourself using `pack.sh`) and install [wifi-switcher\_2.0-1\_all.deb](https://raw.githubusercontent.com/chalaev/wifi-switcher/master/wifi-switcher_2.0-1_all.deb)
+Download (or create yourself using `pack.sh`) and install [wifi-switcher\_2.0-1\_all.deb](https://raw.githubusercontent.com/chalaev/wifi-switcher/package/master/wifi-switcher_2.0-1_all.deb)
 
-    wget  https://raw.githubusercontent.com/chalaev/wifi-switcher/master/wifi-switcher_2.0-1_all.deb
+    wget  https://raw.githubusercontent.com/chalaev/wifi-switcher/package/master/wifi-switcher_2.0-1_all.deb
     dpkg -i wifi-switcher_2.0-1_all.deb
 
 (In Debian instead of `dpkg -i wifi-switcher_2.0-1_all.deb`
@@ -53,7 +53,7 @@ Otherwise just add
 to your ~/.profile
 
 
-<a id="orgb13a5a3"></a>
+<a id="org70d776a"></a>
 
 # Configuration examples for icewm and pdmenu
 
